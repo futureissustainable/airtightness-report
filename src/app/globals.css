@@ -20,10 +20,10 @@
   --color-muted: #9ca3af;
 
   /* Colors - Dark sections */
-  --color-dark-bg: #14171c;
-  --color-dark-title: #e6e8ea;
-  --color-dark-paragraph: #77787a;
-  --color-dark-border: #2a2e36;
+  --color-dark-bg: #0a0b0d;
+  --color-dark-title: #d4d6d8;
+  --color-dark-paragraph: #5a5b5d;
+  --color-dark-border: #1a1c1f;
 
   /* Spacing */
   --padding-desktop-content: 5%;
