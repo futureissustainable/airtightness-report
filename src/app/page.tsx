@@ -101,6 +101,12 @@ export default function Home() {
       {/* Main Content */}
       <main className="content-padding py-10">
         <div ref={reportRef} className="max-w-5xl mx-auto">
+          {/* Title Strip */}
+          <div className="bg-[var(--color-dark-bg)] rounded-[var(--card-radius)] p-8 mb-6 text-center">
+            <h1 className="text-[var(--color-dark-title)] mb-2">Air Tightness Test Report</h1>
+            <p className="text-[var(--color-dark-paragraph)]">ISO 9972:2015 & Passive House Requirements</p>
+          </div>
+
           {/* Report Sections */}
           <div className="space-y-6">
             <Card>
