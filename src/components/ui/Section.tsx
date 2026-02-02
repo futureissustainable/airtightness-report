@@ -1,7 +1,7 @@
 'use client';
 
 import { ReactNode, useState } from 'react';
-import { Plus, Minus, CaretDown } from '@phosphor-icons/react';
+import { Plus, Minus } from '@phosphor-icons/react';
 
 interface SectionProps {
   title: string;
@@ -33,17 +33,12 @@ export default function Section({
         onClick={() => setIsCollapsed(!isCollapsed)}
       >
         <h3 className={dark ? 'text-[var(--color-dark-title)]' : ''}>
-          {sectionNumber && (
-            <span className={dark ? 'text-[var(--color-dark-paragraph)]' : 'text-[var(--color-muted)]'}>
-              {sectionNumber}.{' '}
-            </span>
-          )}
           {title}
         </h3>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           {(onAdd || onRemove) && !isCollapsed && (
-            <div className="flex items-center gap-1 mr-2" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
               {onRemove && (
                 <button
                   onClick={onRemove}
@@ -70,12 +65,11 @@ export default function Section({
               )}
             </div>
           )}
-          <CaretDown
-            weight="bold"
-            className={`w-4 h-4 transition-transform duration-200 ${
-              isCollapsed ? '-rotate-90' : ''
-            } ${dark ? 'text-[var(--color-dark-paragraph)]' : 'text-[var(--color-muted)]'}`}
-          />
+          {sectionNumber && (
+            <span className={`text-base font-medium ${dark ? 'text-[var(--color-dark-title)]' : 'text-[var(--color-title)]'}`}>
+              {sectionNumber}
+            </span>
+          )}
         </div>
       </div>
 
