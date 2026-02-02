@@ -4,11 +4,12 @@
 @import "tailwindcss";
 
 :root {
-  /* Colors */
+  /* Colors - Light */
   --color-title: #14171c;
   --color-paragraph: #737579;
-  --color-background: #ffffff;
-  --color-surface: #f8f9fa;
+  --color-background: #f4f5f6;
+  --color-surface: #ffffff;
+  --color-surface-elevated: #ffffff;
   --color-border: #e5e7eb;
   --color-border-light: #f0f1f2;
   --color-success: #22c55e;
@@ -18,11 +19,22 @@
   --color-accent: #14171c;
   --color-muted: #9ca3af;
 
+  /* Colors - Dark sections */
+  --color-dark-bg: #14171c;
+  --color-dark-title: #e6e8ea;
+  --color-dark-paragraph: #77787a;
+  --color-dark-border: #2a2e36;
+
   /* Spacing */
   --padding-desktop-content: 5%;
   --padding-desktop-media: 3%;
   --padding-mobile-content: 2rem;
   --padding-mobile-media: 1rem;
+
+  /* Card */
+  --card-shadow: 0 1px 3px rgba(20, 23, 28, 0.04), 0 4px 12px rgba(20, 23, 28, 0.03);
+  --card-shadow-hover: 0 2px 6px rgba(20, 23, 28, 0.06), 0 8px 24px rgba(20, 23, 28, 0.06);
+  --card-radius: 16px;
 
   /* Typography - Desktop */
   --h1-size: 4.8rem;
@@ -44,7 +56,6 @@
   --color-foreground: var(--color-title);
   --font-sans: 'Poppins', system-ui, sans-serif;
 
-  /* Custom colors */
   --color-title: var(--color-title);
   --color-paragraph: var(--color-paragraph);
   --color-surface: var(--color-surface);
@@ -85,25 +96,10 @@ h1, h2, h3, h4, h5, h6 {
   margin: 0;
 }
 
-h1 {
-  font-size: var(--h1-size);
-  line-height: var(--h1-line-height);
-}
-
-h2 {
-  font-size: var(--h2-size);
-  line-height: var(--h2-line-height);
-}
-
-h3 {
-  font-size: var(--h3-size);
-  line-height: var(--h3-line-height);
-}
-
-h4 {
-  font-size: var(--h4-size);
-  line-height: var(--h4-line-height);
-}
+h1 { font-size: var(--h1-size); line-height: var(--h1-line-height); }
+h2 { font-size: var(--h2-size); line-height: var(--h2-line-height); }
+h3 { font-size: var(--h3-size); line-height: var(--h3-line-height); }
+h4 { font-size: var(--h4-size); line-height: var(--h4-line-height); }
 
 p {
   font-size: var(--p-size);
@@ -124,16 +120,8 @@ p {
     --h3-line-height: 1.3em;
     --h4-size: 1.2rem;
     --h4-line-height: 1.4em;
+    --card-radius: 12px;
   }
-}
-
-/* Custom Utility Classes */
-.text-title {
-  color: var(--color-title);
-}
-
-.text-paragraph {
-  color: var(--color-paragraph);
 }
 
 /* Layout Padding */
@@ -152,31 +140,30 @@ p {
     padding-left: var(--padding-mobile-content);
     padding-right: var(--padding-mobile-content);
   }
-
   .media-padding {
     padding-left: var(--padding-mobile-media);
     padding-right: var(--padding-mobile-media);
   }
 }
 
-/* Form Elements - Monochrome Minimalist */
+/* Form Elements */
 input, select, textarea {
   font-family: 'Poppins', system-ui, sans-serif;
   font-size: var(--p-size);
   font-weight: var(--paragraph-weight);
   color: var(--color-title);
-  background: var(--color-background);
+  background: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: 8px;
-  padding: 0.75rem 1rem;
-  transition: all 0.2s ease;
+  border-radius: 10px;
+  padding: 0.875rem 1rem;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
   outline: none;
   width: 100%;
 }
 
 input:focus, select:focus, textarea:focus {
   border-color: var(--color-title);
-  box-shadow: 0 0 0 3px rgba(20, 23, 28, 0.08);
+  box-shadow: 0 0 0 3px rgba(20, 23, 28, 0.06);
 }
 
 input::placeholder, textarea::placeholder {
@@ -185,34 +172,63 @@ input::placeholder, textarea::placeholder {
 }
 
 input:disabled, select:disabled, textarea:disabled {
-  background: var(--color-surface);
+  background: var(--color-background);
   cursor: not-allowed;
-  opacity: 0.7;
+  opacity: 0.6;
 }
 
-/* Button Base Styles */
+/* Dark section inputs */
+.dark-section input,
+.dark-section select,
+.dark-section textarea {
+  background: var(--color-dark-border);
+  border-color: var(--color-dark-border);
+  color: var(--color-dark-title);
+}
+
+.dark-section input:focus,
+.dark-section select:focus,
+.dark-section textarea:focus {
+  border-color: var(--color-dark-paragraph);
+  box-shadow: 0 0 0 3px rgba(230, 232, 234, 0.1);
+}
+
+.dark-section input::placeholder,
+.dark-section textarea::placeholder {
+  color: var(--color-dark-paragraph);
+}
+
+.dark-section label {
+  color: var(--color-dark-title);
+}
+
+.dark-section p {
+  color: var(--color-dark-paragraph);
+}
+
+/* Button Base */
 button {
   font-family: 'Poppins', system-ui, sans-serif;
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
   border: none;
   outline: none;
 }
 
-/* Scrollbar Styling */
+/* Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--color-surface);
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
   background: var(--color-border);
-  border-radius: 4px;
+  border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -222,16 +238,28 @@ button {
 /* Selection */
 ::selection {
   background: var(--color-title);
-  color: var(--color-background);
+  color: var(--color-surface);
 }
 
-/* Smooth transitions for interactive elements */
-a, button, input, select, textarea {
-  transition: all 0.2s ease;
-}
-
-/* Focus visible for accessibility */
+/* Focus visible */
 :focus-visible {
   outline: 2px solid var(--color-title);
   outline-offset: 2px;
+}
+
+/* Collapse animation */
+.collapse-content {
+  display: grid;
+  grid-template-rows: 1fr;
+  transition: grid-template-rows 0.3s ease-out, opacity 0.2s ease-out;
+  opacity: 1;
+}
+
+.collapse-content.collapsed {
+  grid-template-rows: 0fr;
+  opacity: 0;
+}
+
+.collapse-content > div {
+  overflow: hidden;
 }

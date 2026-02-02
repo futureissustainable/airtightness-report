@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Button, Card } from '@/components/ui';
 import {
   GeneralInformation,
@@ -20,7 +20,20 @@ import {
 export default function Home() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
+  const [scrollProgress, setScrollProgress] = useState(0);
   const reportRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+      setScrollProgress(progress);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const handleDownloadPdf = async () => {
     if (!reportRef.current || isGeneratingPdf) return;
@@ -59,9 +72,9 @@ export default function Home() {
   return (
     <>
       {/* Header */}
-      <header className="sticky top-0 z-30 bg-white/90 backdrop-blur-sm border-b border-[var(--color-border)]">
+      <header className="sticky top-0 z-30 bg-[var(--color-surface)]/95 backdrop-blur-sm">
         <div className="content-padding">
-          <div className="flex items-center justify-between h-14 max-w-6xl mx-auto">
+          <div className="flex items-center justify-between h-16 max-w-5xl mx-auto">
             <h4>Air Tightness Report</h4>
             <div className="flex items-center gap-2">
               <Button
@@ -84,26 +97,53 @@ export default function Home() {
             </div>
           </div>
         </div>
+        {/* Scroll Progress Bar */}
+        <div className="h-[2px] bg-[var(--color-border)]">
+          <div
+            className="h-full bg-[var(--color-title)] transition-all duration-100"
+            style={{ width: `${scrollProgress}%` }}
+          />
+        </div>
       </header>
 
       {/* Main Content */}
-      <main className="content-padding py-8">
-        <div ref={reportRef} className="max-w-6xl mx-auto">
+      <main className="content-padding py-10">
+        <div ref={reportRef} className="max-w-5xl mx-auto">
           {/* Title */}
-          <div className="text-center mb-10">
-            <h1 className="mb-2">Air Tightness Test Report</h1>
-            <p>ISO 9972:2015 & Passive House Requirements</p>
+          <div className="text-center mb-12">
+            <h1 className="mb-3">Air Tightness Test Report</h1>
+            <p className="text-lg">ISO 9972:2015 & Passive House Requirements</p>
           </div>
 
           {/* Report Sections */}
-          <div className="space-y-8">
-            <GeneralInformation />
-            <BuildingConditions />
-            <BuildingPreparation />
-            <LeakageIdentification />
-            <MeasurementData />
-            <Results />
-            <Charts />
+          <div className="space-y-6">
+            <Card>
+              <GeneralInformation />
+            </Card>
+
+            <Card>
+              <BuildingConditions />
+            </Card>
+
+            <Card>
+              <BuildingPreparation />
+            </Card>
+
+            <Card>
+              <LeakageIdentification />
+            </Card>
+
+            <Card>
+              <MeasurementData />
+            </Card>
+
+            <Card variant="dark">
+              <Results />
+            </Card>
+
+            <Card>
+              <Charts />
+            </Card>
           </div>
         </div>
       </main>
@@ -116,6 +156,10 @@ export default function Home() {
         @media print {
           header { display: none !important; }
           .content-padding { padding: 1rem; }
+          .collapse-content.collapsed {
+            grid-template-rows: 1fr !important;
+            opacity: 1 !important;
+          }
         }
       `}</style>
     </>
