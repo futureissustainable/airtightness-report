@@ -153,7 +153,7 @@ input, select, textarea {
   color: var(--color-title);
   background: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: 10px;
+  border-radius: 0;
   padding: 0.875rem 1rem;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
   outline: none;
