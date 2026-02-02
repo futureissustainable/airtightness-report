@@ -8,7 +8,7 @@ export default function GeneralInformation() {
 
   return (
     <Section title="General Information" sectionNumber={1}>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Input
           label="Project Name"
           placeholder="Enter project name"
@@ -23,7 +23,7 @@ export default function GeneralInformation() {
         />
       </div>
 
-      <div className="mt-6">
+      <div className="mt-4">
         <Input
           label="Project Address"
           placeholder="Full Address, City, Postal Code, Country"
@@ -32,7 +32,7 @@ export default function GeneralInformation() {
         />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
         <Input
           label="Technician"
           placeholder="Technician's Name"

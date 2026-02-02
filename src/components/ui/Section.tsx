@@ -2,7 +2,6 @@
 
 import { ReactNode } from 'react';
 import { Plus, Minus } from '@phosphor-icons/react';
-import Button from './Button';
 
 interface SectionProps {
   title: string;
@@ -11,8 +10,6 @@ interface SectionProps {
   className?: string;
   onAdd?: () => void;
   onRemove?: () => void;
-  addLabel?: string;
-  removeLabel?: string;
 }
 
 export default function Section({
@@ -22,49 +19,40 @@ export default function Section({
   className = '',
   onAdd,
   onRemove,
-  addLabel = 'Add',
-  removeLabel = 'Remove',
 }: SectionProps) {
   return (
-    <section className={`mb-8 ${className}`}>
-      <div className="flex items-center justify-between mb-6 pb-3 border-b border-[var(--color-border)]">
-        <h3 className="flex items-center gap-3">
+    <section className={`${className}`}>
+      <div className="flex items-center justify-between mb-5">
+        <h3 className="flex items-baseline gap-2">
           {sectionNumber && (
-            <span className="flex items-center justify-center w-8 h-8 rounded-full bg-[var(--color-title)] text-white text-sm font-medium">
-              {sectionNumber}
-            </span>
+            <span className="text-[var(--color-muted)]">{sectionNumber}.</span>
           )}
-          <span>{title}</span>
+          {title}
         </h3>
         {(onAdd || onRemove) && (
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
             {onRemove && (
-              <Button
-                variant="ghost"
-                size="sm"
+              <button
                 onClick={onRemove}
-                title={removeLabel}
-                className="text-[var(--color-muted)] hover:text-[var(--color-error)]"
+                className="p-1.5 text-[var(--color-muted)] hover:text-[var(--color-error)] transition-colors"
+                title="Remove"
               >
-                <Minus weight="bold" className="w-4 h-4 mr-1" />
-                <span className="hidden sm:inline">{removeLabel}</span>
-              </Button>
+                <Minus weight="bold" className="w-4 h-4" />
+              </button>
             )}
             {onAdd && (
-              <Button
-                variant="secondary"
-                size="sm"
+              <button
                 onClick={onAdd}
-                title={addLabel}
+                className="p-1.5 text-[var(--color-muted)] hover:text-[var(--color-title)] transition-colors"
+                title="Add"
               >
-                <Plus weight="bold" className="w-4 h-4 mr-1" />
-                <span className="hidden sm:inline">{addLabel}</span>
-              </Button>
+                <Plus weight="bold" className="w-4 h-4" />
+              </button>
             )}
           </div>
         )}
       </div>
-      <div>{children}</div>
+      {children}
     </section>
   );
 }

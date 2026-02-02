@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Button, Card } from '@/components/ui';
 import {
   GeneralInformation,
@@ -13,52 +13,73 @@ import {
   SavedReports,
 } from '@/components/sections';
 import {
-  Wind,
   Folder,
-  Printer,
-  Info,
+  DownloadSimple,
 } from '@phosphor-icons/react';
 
 export default function Home() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
+  const reportRef = useRef<HTMLDivElement>(null);
 
-  const handlePrint = () => {
-    window.print();
+  const handleDownloadPdf = async () => {
+    if (!reportRef.current || isGeneratingPdf) return;
+
+    setIsGeneratingPdf(true);
+
+    try {
+      const html2pdf = (await import('html2pdf.js')).default;
+
+      const opt = {
+        margin: [10, 10, 10, 10],
+        filename: 'airtightness-report.pdf',
+        image: { type: 'jpeg', quality: 0.95 },
+        html2canvas: {
+          scale: 2,
+          useCORS: true,
+          letterRendering: true,
+        },
+        jsPDF: {
+          unit: 'mm',
+          format: 'a4',
+          orientation: 'portrait',
+          compress: true,
+        },
+        pagebreak: { mode: 'avoid-all' }
+      };
+
+      await html2pdf().set(opt).from(reportRef.current).save();
+    } catch (error) {
+      console.error('PDF generation failed:', error);
+    } finally {
+      setIsGeneratingPdf(false);
+    }
   };
 
   return (
     <>
       {/* Header */}
-      <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-lg border-b border-[var(--color-border)]">
+      <header className="sticky top-0 z-30 bg-white/90 backdrop-blur-sm border-b border-[var(--color-border)]">
         <div className="content-padding">
-          <div className="flex items-center justify-between h-16 max-w-7xl mx-auto">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-[var(--color-title)] flex items-center justify-center">
-                <Wind weight="bold" className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <h4 className="leading-tight">Air Tightness Test</h4>
-                <p className="text-xs text-[var(--color-muted)]">ISO 9972:2015 Report</p>
-              </div>
-            </div>
+          <div className="flex items-center justify-between h-14 max-w-6xl mx-auto">
+            <h4>Air Tightness Report</h4>
             <div className="flex items-center gap-2">
               <Button
-                variant="ghost"
+                variant="secondary"
                 size="sm"
-                onClick={handlePrint}
-                className="hidden sm:flex"
+                onClick={handleDownloadPdf}
+                disabled={isGeneratingPdf}
               >
-                <Printer weight="bold" className="w-4 h-4 mr-2" />
-                Print
+                <DownloadSimple weight="bold" className="w-4 h-4 mr-1.5" />
+                {isGeneratingPdf ? 'Generating...' : 'PDF'}
               </Button>
               <Button
                 variant="primary"
                 size="sm"
                 onClick={() => setIsSidebarOpen(true)}
               >
-                <Folder weight="bold" className="w-4 h-4 mr-2" />
-                <span className="hidden sm:inline">Saved Reports</span>
-                <span className="sm:hidden">Reports</span>
+                <Folder weight="bold" className="w-4 h-4 mr-1.5" />
+                Reports
               </Button>
             </div>
           </div>
@@ -67,71 +88,23 @@ export default function Home() {
 
       {/* Main Content */}
       <main className="content-padding py-8">
-        <div className="max-w-7xl mx-auto">
-          {/* Title Section */}
-          <div className="text-center mb-12">
-            <h1 className="mb-4">Air Tightness Test Report</h1>
-            <p className="text-lg max-w-2xl mx-auto">
-              In accordance with ISO 9972:2015 & Passive House Requirements
-            </p>
+        <div ref={reportRef} className="max-w-6xl mx-auto">
+          {/* Title */}
+          <div className="text-center mb-10">
+            <h1 className="mb-2">Air Tightness Test Report</h1>
+            <p>ISO 9972:2015 & Passive House Requirements</p>
           </div>
-
-          {/* Info Banner */}
-          <Card className="mb-10 bg-[var(--color-surface)] border-none">
-            <div className="flex items-start gap-4">
-              <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-white flex items-center justify-center">
-                <Info weight="fill" className="w-5 h-5 text-[var(--color-title)]" />
-              </div>
-              <div>
-                <h4 className="mb-1">Automated Calculations</h4>
-                <p className="text-sm">
-                  This report automatically calculates volumes, flow rates, and compliance status based on your inputs.
-                  All data is saved locally in your browser - no account required. Use the &quot;Saved Reports&quot; button to manage your reports.
-                </p>
-              </div>
-            </div>
-          </Card>
 
           {/* Report Sections */}
-          <div className="space-y-6">
-            <Card>
-              <GeneralInformation />
-            </Card>
-
-            <Card>
-              <BuildingConditions />
-            </Card>
-
-            <Card>
-              <BuildingPreparation />
-            </Card>
-
-            <Card>
-              <LeakageIdentification />
-            </Card>
-
-            <Card>
-              <MeasurementData />
-            </Card>
-
-            <Card>
-              <Results />
-            </Card>
-
-            <Card>
-              <Charts />
-            </Card>
+          <div className="space-y-8">
+            <GeneralInformation />
+            <BuildingConditions />
+            <BuildingPreparation />
+            <LeakageIdentification />
+            <MeasurementData />
+            <Results />
+            <Charts />
           </div>
-
-          {/* Footer */}
-          <footer className="mt-16 pt-8 border-t border-[var(--color-border)] text-center">
-            <p className="text-sm text-[var(--color-muted)]">
-              Air Tightness Test Report Generator
-            </p>
-            <p className="text-xs text-[var(--color-muted)] mt-1">
-              ISO 9972:2015 Compliant • Passive House Standard
-            </p>
-          </footer>
         </div>
       </main>
 
@@ -141,18 +114,8 @@ export default function Home() {
       {/* Print Styles */}
       <style jsx global>{`
         @media print {
-          header,
-          .no-print {
-            display: none !important;
-          }
-          body {
-            print-color-adjust: exact;
-            -webkit-print-color-adjust: exact;
-          }
-          .content-padding {
-            padding-left: 1rem;
-            padding-right: 1rem;
-          }
+          header { display: none !important; }
+          .content-padding { padding: 1rem; }
         }
       `}</style>
     </>
