@@ -1,8 +1,7 @@
 'use client';
 
 import { useRef, ChangeEvent } from 'react';
-import { Image as ImageIcon, X, UploadSimple } from '@phosphor-icons/react';
-import Button from './Button';
+import { X, UploadSimple } from '@phosphor-icons/react';
 
 interface ImageUploadProps {
   imageData: string | null;
@@ -50,32 +49,27 @@ export default function ImageUpload({
           <img
             src={imageData}
             alt="Uploaded"
-            className="w-full max-h-64 object-contain rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)]"
+            className="w-full max-h-48 object-contain rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)]"
           />
-          <Button
-            variant="danger"
-            size="icon"
+          <button
             onClick={handleRemove}
-            className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
-            title="Remove image"
+            className="absolute top-2 right-2 p-1.5 bg-white rounded-full shadow opacity-0 group-hover:opacity-100 transition-opacity text-[var(--color-muted)] hover:text-[var(--color-error)]"
+            title="Remove"
           >
             <X weight="bold" className="w-4 h-4" />
-          </Button>
+          </button>
         </div>
       ) : (
         <button
           type="button"
           onClick={() => inputRef.current?.click()}
-          className="w-full py-8 border-2 border-dashed border-[var(--color-border)] rounded-lg
-            flex flex-col items-center justify-center gap-2 text-[var(--color-muted)]
+          className="w-full py-6 border border-dashed border-[var(--color-border)] rounded-lg
+            flex items-center justify-center gap-2 text-[var(--color-muted)]
             hover:border-[var(--color-title)] hover:text-[var(--color-title)]
-            transition-all duration-200 cursor-pointer"
+            transition-colors cursor-pointer"
         >
-          <div className="w-12 h-12 rounded-full bg-[var(--color-surface)] flex items-center justify-center">
-            <UploadSimple weight="bold" className="w-6 h-6" />
-          </div>
-          <span className="text-sm font-medium">Click to upload image</span>
-          <span className="text-xs">PNG, JPG up to 10MB</span>
+          <UploadSimple weight="bold" className="w-4 h-4" />
+          <span className="text-sm">Upload image</span>
         </button>
       )}
     </div>

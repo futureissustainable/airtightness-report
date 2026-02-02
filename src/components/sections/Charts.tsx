@@ -13,10 +13,8 @@ import {
 } from 'chart.js';
 import { Scatter } from 'react-chartjs-2';
 import { useReportStore } from '@/store/reportStore';
-import { Section, Card } from '@/components/ui';
-import { ChartLine } from '@phosphor-icons/react';
+import { Section } from '@/components/ui';
 
-// Register ChartJS components
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -28,10 +26,9 @@ ChartJS.register(
 );
 
 export default function Charts() {
-  const { measurementRows, getCalculatedResults, results } = useReportStore();
+  const { measurementRows, getCalculatedResults } = useReportStore();
   const { totalVolume } = getCalculatedResults();
 
-  // Calculate chart data
   const chartData = useMemo(() => {
     const depData: { x: number; y: number }[] = [];
     const preData: { x: number; y: number }[] = [];
@@ -48,14 +45,12 @@ export default function Charts() {
       }
     });
 
-    // Sort data by pressure
     depData.sort((a, b) => a.x - b.x);
     preData.sort((a, b) => a.x - b.x);
 
     return { depData, preData };
   }, [measurementRows, totalVolume]);
 
-  // Calculate log-log data
   const logLogData = useMemo(() => {
     const depLogData = chartData.depData
       .filter((d) => d.x > 0 && d.y > 0)
@@ -68,7 +63,6 @@ export default function Charts() {
     return { depLogData, preLogData };
   }, [chartData]);
 
-  // Calculate Passivhaus target line
   const passivhausLine = useMemo(() => {
     if (totalVolume <= 0) return [];
     const targetFlowAt50 = 0.6 * totalVolume;
@@ -83,7 +77,7 @@ export default function Charts() {
     ];
   }, [totalVolume, chartData]);
 
-  const flowChartOptions = {
+  const chartOptions = {
     responsive: true,
     maintainAspectRatio: true,
     plugins: {
@@ -91,19 +85,16 @@ export default function Charts() {
         position: 'bottom' as const,
         labels: {
           usePointStyle: true,
-          padding: 20,
-          font: {
-            family: 'Poppins',
-            size: 12,
-          },
+          padding: 16,
+          font: { family: 'Poppins', size: 11 },
         },
       },
       tooltip: {
         backgroundColor: '#14171c',
-        titleFont: { family: 'Poppins', size: 12 },
-        bodyFont: { family: 'Poppins', size: 11 },
-        padding: 12,
-        cornerRadius: 8,
+        titleFont: { family: 'Poppins', size: 11 },
+        bodyFont: { family: 'Poppins', size: 10 },
+        padding: 10,
+        cornerRadius: 6,
       },
     },
     scales: {
@@ -111,85 +102,63 @@ export default function Charts() {
         title: {
           display: true,
           text: 'Pressure (Pa)',
-          font: { family: 'Poppins', size: 12, weight: 500 },
+          font: { family: 'Poppins', size: 11, weight: 500 as const },
           color: '#14171c',
         },
-        grid: {
-          color: '#f0f1f2',
-        },
-        ticks: {
-          font: { family: 'Poppins', size: 11 },
-          color: '#737579',
-        },
+        grid: { color: '#f0f1f2' },
+        ticks: { font: { family: 'Poppins', size: 10 }, color: '#737579' },
       },
       y: {
         title: {
           display: true,
-          text: 'Flow Rate (m³/h)',
-          font: { family: 'Poppins', size: 12, weight: 500 },
+          text: 'Flow (m³/h)',
+          font: { family: 'Poppins', size: 11, weight: 500 as const },
           color: '#14171c',
         },
-        grid: {
-          color: '#f0f1f2',
-        },
-        ticks: {
-          font: { family: 'Poppins', size: 11 },
-          color: '#737579',
-        },
+        grid: { color: '#f0f1f2' },
+        ticks: { font: { family: 'Poppins', size: 10 }, color: '#737579' },
       },
     },
   };
 
   const logChartOptions = {
-    ...flowChartOptions,
+    ...chartOptions,
     scales: {
-      ...flowChartOptions.scales,
-      x: {
-        ...flowChartOptions.scales.x,
-        title: {
-          ...flowChartOptions.scales.x.title,
-          text: 'Log(Pressure)',
-        },
-      },
-      y: {
-        ...flowChartOptions.scales.y,
-        title: {
-          ...flowChartOptions.scales.y.title,
-          text: 'Log(Flow Rate)',
-        },
-      },
+      ...chartOptions.scales,
+      x: { ...chartOptions.scales.x, title: { ...chartOptions.scales.x.title, text: 'Log(P)' } },
+      y: { ...chartOptions.scales.y, title: { ...chartOptions.scales.y.title, text: 'Log(V)' } },
     },
   };
 
   const flowChartData = {
     datasets: [
       {
-        label: 'Depressurization',
+        label: 'Dep.',
         data: chartData.depData,
-        backgroundColor: 'rgba(239, 68, 68, 0.6)',
-        borderColor: 'rgba(239, 68, 68, 1)',
+        backgroundColor: '#14171c',
+        borderColor: '#14171c',
         showLine: true,
-        pointRadius: 6,
-        pointHoverRadius: 8,
-        borderWidth: 2,
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        borderWidth: 1.5,
       },
       {
-        label: 'Pressurization',
+        label: 'Pres.',
         data: chartData.preData,
-        backgroundColor: 'rgba(59, 130, 246, 0.6)',
-        borderColor: 'rgba(59, 130, 246, 1)',
+        backgroundColor: '#737579',
+        borderColor: '#737579',
         showLine: true,
-        pointRadius: 6,
-        pointHoverRadius: 8,
-        borderWidth: 2,
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        borderWidth: 1.5,
       },
       {
-        label: 'Passivhaus Target (n₅₀ = 0.6)',
+        label: 'Target (0.6)',
         data: passivhausLine,
         backgroundColor: 'transparent',
-        borderColor: '#9ca3af',
-        borderWidth: 2,
-        borderDash: [6, 6],
+        borderColor: '#d1d5db',
+        borderWidth: 1,
+        borderDash: [4, 4],
         pointRadius: 0,
         showLine: true,
       },
@@ -199,24 +168,24 @@ export default function Charts() {
   const logChartData = {
     datasets: [
       {
-        label: 'Depressurization (Log)',
+        label: 'Dep.',
         data: logLogData.depLogData,
-        backgroundColor: 'rgba(239, 68, 68, 0.6)',
-        borderColor: 'rgba(239, 68, 68, 1)',
+        backgroundColor: '#14171c',
+        borderColor: '#14171c',
         showLine: true,
-        pointRadius: 6,
-        pointHoverRadius: 8,
-        borderWidth: 2,
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        borderWidth: 1.5,
       },
       {
-        label: 'Pressurization (Log)',
+        label: 'Pres.',
         data: logLogData.preLogData,
-        backgroundColor: 'rgba(59, 130, 246, 0.6)',
-        borderColor: 'rgba(59, 130, 246, 1)',
+        backgroundColor: '#737579',
+        borderColor: '#737579',
         showLine: true,
-        pointRadius: 6,
-        pointHoverRadius: 8,
-        borderWidth: 2,
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        borderWidth: 1.5,
       },
     ],
   };
@@ -226,29 +195,27 @@ export default function Charts() {
   return (
     <Section title="Graphs" sectionNumber={7}>
       {!hasData ? (
-        <Card className="bg-[var(--color-surface)] text-center py-12">
-          <div className="w-16 h-16 rounded-full bg-white mx-auto mb-4 flex items-center justify-center">
-            <ChartLine weight="light" className="w-8 h-8 text-[var(--color-muted)]" />
-          </div>
-          <p className="text-[var(--color-muted)]">No measurement data available.</p>
-          <p className="text-sm text-[var(--color-muted)] mt-1">
-            Enter measurement data in Section 5 to generate charts.
-          </p>
-        </Card>
+        <p className="text-[var(--color-muted)] py-8 text-center">
+          Enter measurement data to generate charts.
+        </p>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Card>
-            <h4 className="mb-4 text-center">Flow Rate vs. Pressure</h4>
-            <div className="aspect-square max-h-[400px]">
-              <Scatter data={flowChartData} options={flowChartOptions} />
+          <div className="border border-[var(--color-border)] rounded-lg p-4">
+            <p className="text-sm font-medium text-[var(--color-title)] mb-3 text-center">
+              Flow vs Pressure
+            </p>
+            <div className="aspect-square max-h-[320px]">
+              <Scatter data={flowChartData} options={chartOptions} />
             </div>
-          </Card>
-          <Card>
-            <h4 className="mb-4 text-center">Log(Flow Rate) vs. Log(Pressure)</h4>
-            <div className="aspect-square max-h-[400px]">
+          </div>
+          <div className="border border-[var(--color-border)] rounded-lg p-4">
+            <p className="text-sm font-medium text-[var(--color-title)] mb-3 text-center">
+              Log-Log Plot
+            </p>
+            <div className="aspect-square max-h-[320px]">
               <Scatter data={logChartData} options={logChartOptions} />
             </div>
-          </Card>
+          </div>
         </div>
       )}
     </Section>
