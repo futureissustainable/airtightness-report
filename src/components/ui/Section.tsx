@@ -32,7 +32,7 @@ export default function Section({
         className="flex items-center justify-between mb-6 cursor-pointer select-none"
         onClick={() => setIsCollapsed(!isCollapsed)}
       >
-        <h3 className={dark ? 'text-[var(--color-dark-title)]' : ''}>
+        <h3 style={dark ? { color: '#e6e8ea' } : undefined}>
           {title}
         </h3>
 
@@ -66,7 +66,7 @@ export default function Section({
             </div>
           )}
           {sectionNumber && (
-            <span className={`text-base font-medium ${dark ? 'text-[var(--color-dark-title)]' : 'text-[var(--color-title)]'}`}>
+            <span style={dark ? { color: '#e6e8ea' } : undefined} className="text-base font-medium text-[var(--color-title)]">
               {sectionNumber}
             </span>
           )}

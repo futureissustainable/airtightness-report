@@ -7,7 +7,7 @@ export default function GeneralInformation() {
   const { generalInfo, updateGeneralInfo } = useReportStore();
 
   return (
-    <Section title="General Information" sectionNumber={1}>
+    <Section title="Info" sectionNumber={1}>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Input
           label="Project Name"

@@ -129,12 +129,12 @@ export default function Home() {
               <MeasurementData />
             </Card>
 
-            <Card variant="dark">
-              <Results />
-            </Card>
-
             <Card>
               <Charts />
+            </Card>
+
+            <Card variant="dark">
+              <Results />
             </Card>
           </div>
         </div>

@@ -13,7 +13,7 @@ export default function LeakageIdentification() {
 
   return (
     <Section
-      title="Visual Leakage Identification"
+      title="Leakage"
       sectionNumber={4}
       onAdd={addLeakageItem}
       onRemove={leakageItems.length > 0 ? removeLeakageItem : undefined}

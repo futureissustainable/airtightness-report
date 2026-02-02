@@ -193,7 +193,7 @@ export default function Charts() {
   const hasData = chartData.depData.length > 0 || chartData.preData.length > 0;
 
   return (
-    <Section title="Graphs" sectionNumber={7}>
+    <Section title="Graphs" sectionNumber={6}>
       {!hasData ? (
         <p className="text-[var(--color-muted)] py-8 text-center">
           Enter measurement data to generate charts.
