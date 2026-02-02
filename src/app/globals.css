@@ -1,0 +1,237 @@
+/* Import Poppins Font - must be before tailwindcss */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+@import "tailwindcss";
+
+:root {
+  /* Colors */
+  --color-title: #14171c;
+  --color-paragraph: #737579;
+  --color-background: #ffffff;
+  --color-surface: #f8f9fa;
+  --color-border: #e5e7eb;
+  --color-border-light: #f0f1f2;
+  --color-success: #22c55e;
+  --color-success-light: #dcfce7;
+  --color-error: #ef4444;
+  --color-error-light: #fee2e2;
+  --color-accent: #14171c;
+  --color-muted: #9ca3af;
+
+  /* Spacing */
+  --padding-desktop-content: 5%;
+  --padding-desktop-media: 3%;
+  --padding-mobile-content: 2rem;
+  --padding-mobile-media: 1rem;
+
+  /* Typography - Desktop */
+  --h1-size: 4.8rem;
+  --h1-line-height: 1.1em;
+  --h2-size: 2rem;
+  --h2-line-height: 1.2em;
+  --h3-size: 1.6rem;
+  --h3-line-height: 1.25em;
+  --h4-size: 1.3rem;
+  --h4-line-height: 1.4em;
+  --p-size: 0.9rem;
+  --p-line-height: 1.6em;
+  --heading-weight: 500;
+  --paragraph-weight: 300;
+}
+
+@theme inline {
+  --color-background: var(--color-background);
+  --color-foreground: var(--color-title);
+  --font-sans: 'Poppins', system-ui, sans-serif;
+
+  /* Custom colors */
+  --color-title: var(--color-title);
+  --color-paragraph: var(--color-paragraph);
+  --color-surface: var(--color-surface);
+  --color-border: var(--color-border);
+  --color-border-light: var(--color-border-light);
+  --color-success: var(--color-success);
+  --color-success-light: var(--color-success-light);
+  --color-error: var(--color-error);
+  --color-error-light: var(--color-error-light);
+  --color-accent: var(--color-accent);
+  --color-muted: var(--color-muted);
+}
+
+/* Base Styles */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-background);
+  color: var(--color-paragraph);
+  font-family: 'Poppins', system-ui, sans-serif;
+  font-weight: var(--paragraph-weight);
+  font-size: var(--p-size);
+  line-height: var(--p-line-height);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--color-title);
+  font-weight: var(--heading-weight);
+  margin: 0;
+}
+
+h1 {
+  font-size: var(--h1-size);
+  line-height: var(--h1-line-height);
+}
+
+h2 {
+  font-size: var(--h2-size);
+  line-height: var(--h2-line-height);
+}
+
+h3 {
+  font-size: var(--h3-size);
+  line-height: var(--h3-line-height);
+}
+
+h4 {
+  font-size: var(--h4-size);
+  line-height: var(--h4-line-height);
+}
+
+p {
+  font-size: var(--p-size);
+  line-height: var(--p-line-height);
+  color: var(--color-paragraph);
+  font-weight: var(--paragraph-weight);
+  margin: 0;
+}
+
+/* Mobile Typography */
+@media (max-width: 768px) {
+  :root {
+    --h1-size: 3.2rem;
+    --h1-line-height: 1.2em;
+    --h2-size: 1.7rem;
+    --h2-line-height: 1.25em;
+    --h3-size: 1.4rem;
+    --h3-line-height: 1.3em;
+    --h4-size: 1.2rem;
+    --h4-line-height: 1.4em;
+  }
+}
+
+/* Custom Utility Classes */
+.text-title {
+  color: var(--color-title);
+}
+
+.text-paragraph {
+  color: var(--color-paragraph);
+}
+
+/* Layout Padding */
+.content-padding {
+  padding-left: var(--padding-desktop-content);
+  padding-right: var(--padding-desktop-content);
+}
+
+.media-padding {
+  padding-left: var(--padding-desktop-media);
+  padding-right: var(--padding-desktop-media);
+}
+
+@media (max-width: 768px) {
+  .content-padding {
+    padding-left: var(--padding-mobile-content);
+    padding-right: var(--padding-mobile-content);
+  }
+
+  .media-padding {
+    padding-left: var(--padding-mobile-media);
+    padding-right: var(--padding-mobile-media);
+  }
+}
+
+/* Form Elements - Monochrome Minimalist */
+input, select, textarea {
+  font-family: 'Poppins', system-ui, sans-serif;
+  font-size: var(--p-size);
+  font-weight: var(--paragraph-weight);
+  color: var(--color-title);
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  transition: all 0.2s ease;
+  outline: none;
+  width: 100%;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--color-title);
+  box-shadow: 0 0 0 3px rgba(20, 23, 28, 0.08);
+}
+
+input::placeholder, textarea::placeholder {
+  color: var(--color-muted);
+  font-weight: var(--paragraph-weight);
+}
+
+input:disabled, select:disabled, textarea:disabled {
+  background: var(--color-surface);
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* Button Base Styles */
+button {
+  font-family: 'Poppins', system-ui, sans-serif;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  outline: none;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-surface);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-muted);
+}
+
+/* Selection */
+::selection {
+  background: var(--color-title);
+  color: var(--color-background);
+}
+
+/* Smooth transitions for interactive elements */
+a, button, input, select, textarea {
+  transition: all 0.2s ease;
+}
+
+/* Focus visible for accessibility */
+:focus-visible {
+  outline: 2px solid var(--color-title);
+  outline-offset: 2px;
+}
