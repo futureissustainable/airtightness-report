@@ -1,7 +1,7 @@
 'use client';
 
-import { ReactNode } from 'react';
-import { Plus, Minus } from '@phosphor-icons/react';
+import { ReactNode, useState } from 'react';
+import { Plus, Minus, CaretDown } from '@phosphor-icons/react';
 
 interface SectionProps {
   title: string;
@@ -10,6 +10,8 @@ interface SectionProps {
   className?: string;
   onAdd?: () => void;
   onRemove?: () => void;
+  defaultCollapsed?: boolean;
+  dark?: boolean;
 }
 
 export default function Section({
@@ -19,40 +21,67 @@ export default function Section({
   className = '',
   onAdd,
   onRemove,
+  defaultCollapsed = false,
+  dark = false,
 }: SectionProps) {
+  const [isCollapsed, setIsCollapsed] = useState(defaultCollapsed);
+
   return (
-    <section className={`${className}`}>
-      <div className="flex items-center justify-between mb-5">
-        <h3 className="flex items-baseline gap-2">
+    <section className={className}>
+      <div
+        className="flex items-center justify-between mb-6 cursor-pointer select-none"
+        onClick={() => setIsCollapsed(!isCollapsed)}
+      >
+        <h3 className={dark ? 'text-[var(--color-dark-title)]' : ''}>
           {sectionNumber && (
-            <span className="text-[var(--color-muted)]">{sectionNumber}.</span>
+            <span className={dark ? 'text-[var(--color-dark-paragraph)]' : 'text-[var(--color-muted)]'}>
+              {sectionNumber}.{' '}
+            </span>
           )}
           {title}
         </h3>
-        {(onAdd || onRemove) && (
-          <div className="flex items-center gap-1">
-            {onRemove && (
-              <button
-                onClick={onRemove}
-                className="p-1.5 text-[var(--color-muted)] hover:text-[var(--color-error)] transition-colors"
-                title="Remove"
-              >
-                <Minus weight="bold" className="w-4 h-4" />
-              </button>
-            )}
-            {onAdd && (
-              <button
-                onClick={onAdd}
-                className="p-1.5 text-[var(--color-muted)] hover:text-[var(--color-title)] transition-colors"
-                title="Add"
-              >
-                <Plus weight="bold" className="w-4 h-4" />
-              </button>
-            )}
-          </div>
-        )}
+
+        <div className="flex items-center gap-2">
+          {(onAdd || onRemove) && !isCollapsed && (
+            <div className="flex items-center gap-1 mr-2" onClick={(e) => e.stopPropagation()}>
+              {onRemove && (
+                <button
+                  onClick={onRemove}
+                  className={`p-1.5 transition-colors ${
+                    dark
+                      ? 'text-[var(--color-dark-paragraph)] hover:text-[var(--color-error)]'
+                      : 'text-[var(--color-muted)] hover:text-[var(--color-error)]'
+                  }`}
+                >
+                  <Minus weight="bold" className="w-4 h-4" />
+                </button>
+              )}
+              {onAdd && (
+                <button
+                  onClick={onAdd}
+                  className={`p-1.5 transition-colors ${
+                    dark
+                      ? 'text-[var(--color-dark-paragraph)] hover:text-[var(--color-dark-title)]'
+                      : 'text-[var(--color-muted)] hover:text-[var(--color-title)]'
+                  }`}
+                >
+                  <Plus weight="bold" className="w-4 h-4" />
+                </button>
+              )}
+            </div>
+          )}
+          <CaretDown
+            weight="bold"
+            className={`w-4 h-4 transition-transform duration-200 ${
+              isCollapsed ? '-rotate-90' : ''
+            } ${dark ? 'text-[var(--color-dark-paragraph)]' : 'text-[var(--color-muted)]'}`}
+          />
+        </div>
       </div>
-      {children}
+
+      <div className={`collapse-content ${isCollapsed ? 'collapsed' : ''}`}>
+        <div>{children}</div>
+      </div>
     </section>
   );
 }
