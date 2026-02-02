@@ -176,6 +176,17 @@ input:disabled, select:disabled, textarea:disabled {
   opacity: 0.6;
 }
 
+/* Hide number input spinners */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+
 /* Dark section inputs */
 .dark-section input,
 .dark-section select,

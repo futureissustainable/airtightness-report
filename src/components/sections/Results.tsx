@@ -10,7 +10,7 @@ export default function Results() {
   const complianceStatus = calculated.isPassing;
 
   return (
-    <Section title="Results" sectionNumber={6} dark>
+    <Section title="Results" sectionNumber={7} dark>
       {/* Test Results Input */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
         <Input

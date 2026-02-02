@@ -22,7 +22,7 @@ export default function BuildingConditions() {
   ];
 
   return (
-    <Section title="Building & Test Conditions" sectionNumber={2}>
+    <Section title="Conditions" sectionNumber={2}>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <Input
           label="Envelope Area (Aₑ)"
