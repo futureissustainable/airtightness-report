@@ -83,7 +83,7 @@ export default function SavedReports({ isOpen, onClose }: SavedReportsProps) {
                 .map((report) => (
                   <div
                     key={report.id}
-                    className={`p-3 rounded-lg border cursor-pointer transition-colors ${
+                    className={`p-3 border cursor-pointer transition-colors ${
                       currentReportId === report.id
                         ? 'border-[var(--color-title)] bg-[var(--color-surface)]'
                         : 'border-[var(--color-border)] hover:border-[var(--color-title)]'
@@ -102,7 +102,7 @@ export default function SavedReports({ isOpen, onClose }: SavedReportsProps) {
                         <div className="flex items-center gap-1">
                           <button
                             onClick={() => handleDelete(report.id)}
-                            className="px-2 py-1 text-xs bg-[var(--color-error)] text-white rounded"
+                            className="px-2 py-1 text-xs bg-[var(--color-error)] text-white"
                           >
                             Delete
                           </button>

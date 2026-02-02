@@ -30,7 +30,7 @@ export default function MeasurementData() {
       onAdd={addMeasurementRow}
       onRemove={measurementRows.length > 1 ? removeMeasurementRow : undefined}
     >
-      <div className="border border-[var(--color-border)] rounded-lg overflow-hidden">
+      <div className="border border-[var(--color-border)] overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>

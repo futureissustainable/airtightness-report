@@ -69,9 +69,9 @@ export default function Home() {
       <main className="content-padding py-10 print:p-4">
         <div className="max-w-5xl mx-auto">
           {/* Title Strip */}
-          <div className="bg-[#0a0b0d] p-8 mb-6 text-center">
-            <h1 style={{ color: '#e6e8ea' }} className="mb-2">Airtightness Report</h1>
-            <p style={{ color: '#77787a' }}>ISO 9972:2015 & Passive House Requirements</p>
+          <div className="bg-[var(--color-dark-bg)] p-8 mb-6 text-center">
+            <h1 className="text-[var(--color-dark-title)] mb-2">Airtightness Report</h1>
+            <p className="text-[var(--color-dark-paragraph)]">ISO 9972:2015 & Passive House Requirements</p>
           </div>
 
           {/* Report Sections */}

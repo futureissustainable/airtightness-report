@@ -25,7 +25,7 @@ export default function LeakageIdentification() {
       ) : (
         <div className="space-y-4">
           {leakageItems.map((item, index) => (
-            <div key={item.id} className="border border-[var(--color-border)] rounded-lg p-4">
+            <div key={item.id} className="border border-[var(--color-border)] p-4">
               <p className="text-sm text-[var(--color-muted)] mb-3">Leakage #{index + 1}</p>
               <div className="space-y-3">
                 <Textarea

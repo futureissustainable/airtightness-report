@@ -26,49 +26,39 @@ export default function Section({
 }: SectionProps) {
   const [isCollapsed, setIsCollapsed] = useState(defaultCollapsed);
 
+  const buttonBaseClass = 'p-1.5 transition-colors';
+  const removeButtonClass = dark
+    ? 'text-[var(--color-dark-paragraph)] hover:text-[var(--color-error)]'
+    : 'text-[var(--color-muted)] hover:text-[var(--color-error)]';
+  const addButtonClass = dark
+    ? 'text-[var(--color-dark-paragraph)] hover:text-[var(--color-dark-title)]'
+    : 'text-[var(--color-muted)] hover:text-[var(--color-title)]';
+
   return (
     <section className={className}>
       <div
         className="flex items-center justify-between mb-6 cursor-pointer select-none"
         onClick={() => setIsCollapsed(!isCollapsed)}
       >
-        <h3 style={dark ? { color: '#e6e8ea' } : undefined}>
-          {title}
-        </h3>
+        <h3>{title}</h3>
 
         <div className="flex items-center gap-3">
           {(onAdd || onRemove) && !isCollapsed && (
             <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
               {onRemove && (
-                <button
-                  onClick={onRemove}
-                  className={`p-1.5 transition-colors ${
-                    dark
-                      ? 'text-[var(--color-dark-paragraph)] hover:text-[var(--color-error)]'
-                      : 'text-[var(--color-muted)] hover:text-[var(--color-error)]'
-                  }`}
-                >
+                <button onClick={onRemove} className={`${buttonBaseClass} ${removeButtonClass}`}>
                   <Minus weight="bold" className="w-4 h-4" />
                 </button>
               )}
               {onAdd && (
-                <button
-                  onClick={onAdd}
-                  className={`p-1.5 transition-colors ${
-                    dark
-                      ? 'text-[var(--color-dark-paragraph)] hover:text-[var(--color-dark-title)]'
-                      : 'text-[var(--color-muted)] hover:text-[var(--color-title)]'
-                  }`}
-                >
+                <button onClick={onAdd} className={`${buttonBaseClass} ${addButtonClass}`}>
                   <Plus weight="bold" className="w-4 h-4" />
                 </button>
               )}
             </div>
           )}
           {sectionNumber && (
-            <span style={dark ? { color: '#e6e8ea' } : undefined} className="text-base font-medium text-[var(--color-title)]">
-              {sectionNumber}
-            </span>
+            <span className="text-base font-medium">{sectionNumber}</span>
           )}
         </div>
       </div>

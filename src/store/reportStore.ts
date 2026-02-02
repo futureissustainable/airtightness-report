@@ -87,10 +87,6 @@ interface ReportState {
   // Saved Reports
   savedReports: Report[];
 
-  // UI State
-  isSaving: boolean;
-  lastSaved: string | null;
-
   // Actions - General Info
   updateGeneralInfo: (info: Partial<GeneralInfo>) => void;
 
@@ -144,8 +140,6 @@ export const useReportStore = create<ReportState>()(
       measurementRows: Array.from({ length: 5 }, () => createDefaultMeasurementRow()),
       results: getDefaultResults(),
       savedReports: [],
-      isSaving: false,
-      lastSaved: null,
 
       // Actions - General Info
       updateGeneralInfo: (info) =>
@@ -280,7 +274,6 @@ export const useReportStore = create<ReportState>()(
           savedReports: state.currentReportId
             ? state.savedReports.map((r) => (r.id === report.id ? report : r))
             : [...state.savedReports, report],
-          lastSaved: now,
         }));
       },
 
@@ -317,7 +310,6 @@ export const useReportStore = create<ReportState>()(
           leakageItems: [createDefaultLeakageItem()],
           measurementRows: Array.from({ length: 5 }, () => createDefaultMeasurementRow()),
           results: getDefaultResults(),
-          lastSaved: null,
         }),
 
       // Computed Values
@@ -376,7 +368,6 @@ export const useReportStore = create<ReportState>()(
         measurementRows: state.measurementRows,
         results: state.results,
         savedReports: state.savedReports,
-        lastSaved: state.lastSaved,
       }),
     }
   )

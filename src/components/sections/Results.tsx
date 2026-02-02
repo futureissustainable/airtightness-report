@@ -11,7 +11,6 @@ export default function Results() {
 
   return (
     <Section title="Results" sectionNumber={7} dark>
-      {/* Test Results Input */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
         <Input
           label="Required Target (n₅₀)"
@@ -19,9 +18,7 @@ export default function Results() {
           step="0.01"
           unit="h⁻¹"
           value={results.requiredN50 || ''}
-          onChange={(e) =>
-            updateResults({ requiredN50: parseFloat(e.target.value) || 0 })
-          }
+          onChange={(e) => updateResults({ requiredN50: parseFloat(e.target.value) || 0 })}
         />
         <Input
           label="Depressurization (n₅₀)"
@@ -29,9 +26,7 @@ export default function Results() {
           step="0.01"
           unit="h⁻¹"
           value={results.depN50 || ''}
-          onChange={(e) =>
-            updateResults({ depN50: parseFloat(e.target.value) || 0 })
-          }
+          onChange={(e) => updateResults({ depN50: parseFloat(e.target.value) || 0 })}
         />
         <Input
           label="Pressurization (n₅₀)"
@@ -39,14 +34,11 @@ export default function Results() {
           step="0.01"
           unit="h⁻¹"
           value={results.preN50 || ''}
-          onChange={(e) =>
-            updateResults({ preN50: parseFloat(e.target.value) || 0 })
-          }
+          onChange={(e) => updateResults({ preN50: parseFloat(e.target.value) || 0 })}
         />
       </div>
 
-      {/* Results Summary Table */}
-      <div className="rounded-lg overflow-hidden mb-8 border border-[var(--color-dark-border)]">
+      <div className="overflow-hidden mb-8 border border-[var(--color-dark-border)]">
         <table className="w-full text-sm">
           <thead>
             <tr className="bg-[var(--color-dark-border)]">
@@ -81,13 +73,12 @@ export default function Results() {
         </table>
       </div>
 
-      {/* Compliance */}
-      <div className={`rounded-xl p-8 text-center ${
+      <div className={`p-8 text-center border ${
         complianceStatus === true
-          ? 'bg-green-500/10 border border-green-500/30'
+          ? 'bg-[var(--color-success)]/10 border-[var(--color-success)]/30'
           : complianceStatus === false
-          ? 'bg-red-500/10 border border-red-500/30'
-          : 'bg-[var(--color-dark-border)] border border-[var(--color-dark-border)]'
+          ? 'bg-[var(--color-error)]/10 border-[var(--color-error)]/30'
+          : 'bg-[var(--color-dark-border)] border-[var(--color-dark-border)]'
       }`}>
         <p className="text-xs text-[var(--color-dark-paragraph)] uppercase tracking-wider mb-2">
           Final Average n₅₀
@@ -97,18 +88,18 @@ export default function Results() {
         </p>
 
         {complianceStatus === true && (
-          <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-green-500/20 rounded-full">
-            <Check weight="bold" className="w-4 h-4 text-green-400" />
-            <span className="text-sm font-medium text-green-400">
+          <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-[var(--color-success)]/20">
+            <Check weight="bold" className="w-4 h-4 text-[var(--color-success)]" />
+            <span className="text-sm font-medium text-[var(--color-success)]">
               PASS — n₅₀ ≤ {results.requiredN50.toFixed(2)}
             </span>
           </div>
         )}
 
         {complianceStatus === false && (
-          <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-red-500/20 rounded-full">
-            <X weight="bold" className="w-4 h-4 text-red-400" />
-            <span className="text-sm font-medium text-red-400">
+          <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-[var(--color-error)]/20">
+            <X weight="bold" className="w-4 h-4 text-[var(--color-error)]" />
+            <span className="text-sm font-medium text-[var(--color-error)]">
               FAIL — n₅₀ &gt; {results.requiredN50.toFixed(2)}
             </span>
           </div>

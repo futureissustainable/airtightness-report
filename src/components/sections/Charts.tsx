@@ -15,15 +15,16 @@ import { Scatter } from 'react-chartjs-2';
 import { useReportStore } from '@/store/reportStore';
 import { Section } from '@/components/ui';
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend
-);
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
+
+// Chart colors matching the design system
+const COLORS = {
+  title: '#14171c',
+  paragraph: '#737579',
+  border: '#e5e7eb',
+  gridLine: '#f0f1f2',
+  muted: '#9ca3af',
+};
 
 export default function Charts() {
   const { measurementRows, getCalculatedResults } = useReportStore();
@@ -90,11 +91,11 @@ export default function Charts() {
         },
       },
       tooltip: {
-        backgroundColor: '#14171c',
+        backgroundColor: COLORS.title,
         titleFont: { family: 'Poppins', size: 11 },
         bodyFont: { family: 'Poppins', size: 10 },
         padding: 10,
-        cornerRadius: 6,
+        cornerRadius: 0,
       },
     },
     scales: {
@@ -103,20 +104,20 @@ export default function Charts() {
           display: true,
           text: 'Pressure (Pa)',
           font: { family: 'Poppins', size: 11, weight: 500 as const },
-          color: '#14171c',
+          color: COLORS.title,
         },
-        grid: { color: '#f0f1f2' },
-        ticks: { font: { family: 'Poppins', size: 10 }, color: '#737579' },
+        grid: { color: COLORS.gridLine },
+        ticks: { font: { family: 'Poppins', size: 10 }, color: COLORS.paragraph },
       },
       y: {
         title: {
           display: true,
           text: 'Flow (m³/h)',
           font: { family: 'Poppins', size: 11, weight: 500 as const },
-          color: '#14171c',
+          color: COLORS.title,
         },
-        grid: { color: '#f0f1f2' },
-        ticks: { font: { family: 'Poppins', size: 10 }, color: '#737579' },
+        grid: { color: COLORS.gridLine },
+        ticks: { font: { family: 'Poppins', size: 10 }, color: COLORS.paragraph },
       },
     },
   };
@@ -135,8 +136,8 @@ export default function Charts() {
       {
         label: 'Dep.',
         data: chartData.depData,
-        backgroundColor: '#14171c',
-        borderColor: '#14171c',
+        backgroundColor: COLORS.title,
+        borderColor: COLORS.title,
         showLine: true,
         pointRadius: 4,
         pointHoverRadius: 6,
@@ -145,8 +146,8 @@ export default function Charts() {
       {
         label: 'Pres.',
         data: chartData.preData,
-        backgroundColor: '#737579',
-        borderColor: '#737579',
+        backgroundColor: COLORS.paragraph,
+        borderColor: COLORS.paragraph,
         showLine: true,
         pointRadius: 4,
         pointHoverRadius: 6,
@@ -156,7 +157,7 @@ export default function Charts() {
         label: 'Target (0.6)',
         data: passivhausLine,
         backgroundColor: 'transparent',
-        borderColor: '#d1d5db',
+        borderColor: COLORS.muted,
         borderWidth: 1,
         borderDash: [4, 4],
         pointRadius: 0,
@@ -170,8 +171,8 @@ export default function Charts() {
       {
         label: 'Dep.',
         data: logLogData.depLogData,
-        backgroundColor: '#14171c',
-        borderColor: '#14171c',
+        backgroundColor: COLORS.title,
+        borderColor: COLORS.title,
         showLine: true,
         pointRadius: 4,
         pointHoverRadius: 6,
@@ -180,8 +181,8 @@ export default function Charts() {
       {
         label: 'Pres.',
         data: logLogData.preLogData,
-        backgroundColor: '#737579',
-        borderColor: '#737579',
+        backgroundColor: COLORS.paragraph,
+        borderColor: COLORS.paragraph,
         showLine: true,
         pointRadius: 4,
         pointHoverRadius: 6,
@@ -200,7 +201,7 @@ export default function Charts() {
         </p>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="border border-[var(--color-border)] rounded-lg p-4">
+          <div className="border border-[var(--color-border)] p-4">
             <p className="text-sm font-medium text-[var(--color-title)] mb-3 text-center">
               Flow vs Pressure
             </p>
@@ -208,7 +209,7 @@ export default function Charts() {
               <Scatter data={flowChartData} options={chartOptions} />
             </div>
           </div>
-          <div className="border border-[var(--color-border)] rounded-lg p-4">
+          <div className="border border-[var(--color-border)] p-4">
             <p className="text-sm font-medium text-[var(--color-title)] mb-3 text-center">
               Log-Log Plot
             </p>
