@@ -1,36 +1,70 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Airtightness Report
+
+A modern web application for generating ISO 9972:2015 compliant airtightness test reports. Built for building professionals, energy consultants, and Passive House certifiers.
+
+## Why Use This?
+
+- **No more spreadsheets** — Replace clunky Excel templates with a clean, purpose-built interface
+- **Instant calculations** — n50, V50, and qE50 values calculated automatically from your measurement data
+- **Local storage** — Reports save automatically to your browser. No accounts, no cloud, no data leaving your machine
+- **PDF export** — Generate professional reports with one click
+- **Passive House ready** — Built-in compliance checking against your target n50 value
+
+## Features
+
+- Full ISO 9972:2015 report structure
+- Depressurization and pressurization test data entry
+- Automatic volume calculations (L x W x H or Area x H methods)
+- Pressure/flow scatter plots with log-log regression
+- Building preparation documentation with image uploads
+- Leakage identification with photo evidence
+- Pass/fail compliance indicator
+- Multiple saved reports
+- Works offline
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
+# Install dependencies
+npm install
+
+# Run development server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+
+# Build for production
+npm run build
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Usage
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. **Info** — Enter project details, client info, test date
+2. **Conditions** — Input building dimensions, envelope area, calculate volume
+3. **Preparation** — Document sealed openings with descriptions and photos
+4. **Leakage** — Record identified air leakage points with images
+5. **Data** — Enter pressure differentials and air change rates for each test point
+6. **Graphs** — View auto-generated pressure/flow charts
+7. **Results** — Set target n50, enter final test results, check compliance
 
-## Learn More
+Reports auto-save to localStorage. Access saved reports via the folder button. Export to PDF via the download button.
 
-To learn more about Next.js, take a look at the following resources:
+## Tech Stack
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- Next.js 16
+- TypeScript
+- Tailwind CSS
+- Zustand (state management)
+- Chart.js
+- html2pdf.js
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Standards
 
-## Deploy on Vercel
+This tool follows the structure and requirements of:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- **ISO 9972:2015** — Thermal performance of buildings — Determination of air permeability of buildings — Fan pressurization method
+- **Passive House Institute** — Airtightness requirements (n50 <= 0.6 h^-1)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## License
+
+MIT
