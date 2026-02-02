@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Button, Card } from '@/components/ui';
+import { Card } from '@/components/ui';
 import {
   GeneralInformation,
   BuildingConditions,
@@ -44,19 +44,19 @@ export default function Home() {
       const html2pdf = (await import('html2pdf.js')).default;
 
       const opt = {
-        margin: [10, 10, 10, 10],
+        margin: [8, 8, 8, 8],
         filename: 'airtightness-report.pdf',
-        image: { type: 'jpeg', quality: 0.95 },
+        image: { type: 'jpeg', quality: 0.8 },
         html2canvas: {
-          scale: 2,
+          scale: 1.5,
           useCORS: true,
-          letterRendering: true,
+          logging: false,
         },
         jsPDF: {
           unit: 'mm',
           format: 'a4',
           orientation: 'portrait',
-          compress: true,
+          compress: false,
         },
         pagebreak: { mode: 'avoid-all' }
       };
@@ -71,50 +71,36 @@ export default function Home() {
 
   return (
     <>
-      {/* Header */}
-      <header className="sticky top-0 z-30 bg-[var(--color-surface)]/95 backdrop-blur-sm">
-        <div className="content-padding">
-          <div className="flex items-center justify-between h-16 max-w-5xl mx-auto">
-            <h4>Air Tightness Report</h4>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={handleDownloadPdf}
-                disabled={isGeneratingPdf}
-              >
-                <DownloadSimple weight="bold" className="w-4 h-4 mr-1.5" />
-                {isGeneratingPdf ? 'Generating...' : 'PDF'}
-              </Button>
-              <Button
-                variant="primary"
-                size="sm"
-                onClick={() => setIsSidebarOpen(true)}
-              >
-                <Folder weight="bold" className="w-4 h-4 mr-1.5" />
-                Reports
-              </Button>
-            </div>
-          </div>
-        </div>
-        {/* Scroll Progress Bar */}
-        <div className="h-[2px] bg-[var(--color-border)]">
-          <div
-            className="h-full bg-[var(--color-title)] transition-all duration-100"
-            style={{ width: `${scrollProgress}%` }}
-          />
-        </div>
-      </header>
+      {/* Scroll Progress Bar - Fixed at top */}
+      <div className="fixed top-0 left-0 right-0 h-[2px] bg-[var(--color-border)] z-50">
+        <div
+          className="h-full bg-[var(--color-title)] transition-all duration-100"
+          style={{ width: `${scrollProgress}%` }}
+        />
+      </div>
+
+      {/* Sticky Action Buttons */}
+      <div className="fixed bottom-6 right-6 flex flex-col gap-3 z-40">
+        <button
+          onClick={() => setIsSidebarOpen(true)}
+          className="w-12 h-12 rounded-full bg-[var(--color-title)] text-white shadow-lg flex items-center justify-center hover:bg-[var(--color-paragraph)] transition-colors"
+          title="Saved Reports"
+        >
+          <Folder weight="bold" className="w-5 h-5" />
+        </button>
+        <button
+          onClick={handleDownloadPdf}
+          disabled={isGeneratingPdf}
+          className="w-12 h-12 rounded-full bg-[var(--color-surface)] text-[var(--color-title)] shadow-lg border border-[var(--color-border)] flex items-center justify-center hover:bg-[var(--color-background)] transition-colors disabled:opacity-50"
+          title={isGeneratingPdf ? 'Generating...' : 'Download PDF'}
+        >
+          <DownloadSimple weight="bold" className={`w-5 h-5 ${isGeneratingPdf ? 'animate-pulse' : ''}`} />
+        </button>
+      </div>
 
       {/* Main Content */}
       <main className="content-padding py-10">
         <div ref={reportRef} className="max-w-5xl mx-auto">
-          {/* Title */}
-          <div className="text-center mb-12">
-            <h1 className="mb-3">Air Tightness Test Report</h1>
-            <p className="text-lg">ISO 9972:2015 & Passive House Requirements</p>
-          </div>
-
           {/* Report Sections */}
           <div className="space-y-6">
             <Card>
@@ -154,7 +140,7 @@ export default function Home() {
       {/* Print Styles */}
       <style jsx global>{`
         @media print {
-          header { display: none !important; }
+          .fixed { display: none !important; }
           .content-padding { padding: 1rem; }
           .collapse-content.collapsed {
             grid-template-rows: 1fr !important;
