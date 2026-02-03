@@ -2,6 +2,7 @@
 
 import { useReportStore } from '@/store/reportStore';
 import { Section, Input, Select } from '@/components/ui';
+import { Plus, Minus } from '@phosphor-icons/react';
 import React from 'react';
 
 export default function BuildingConditions() {
@@ -125,12 +126,12 @@ export default function BuildingConditions() {
             <thead>
               <tr className="border-b border-[var(--color-border)]">
                 <th className="text-left py-2 px-3 font-medium text-[var(--color-paragraph)]">Space/Room</th>
-                <th className="text-left py-2 px-3 font-medium text-[var(--color-paragraph)]">Method</th>
-                <th className="text-left py-2 px-3 font-medium text-[var(--color-paragraph)]">L (m)</th>
-                <th className="text-left py-2 px-3 font-medium text-[var(--color-paragraph)]">W (m)</th>
-                <th className="text-left py-2 px-3 font-medium text-[var(--color-paragraph)]">Area (m²)</th>
-                <th className="text-left py-2 px-3 font-medium text-[var(--color-paragraph)]">H (m)</th>
-                <th className="text-right py-2 px-3 font-medium text-[var(--color-paragraph)]">Volume</th>
+                <th className="text-left py-2 px-3 font-medium text-[var(--color-paragraph)] w-24">Method</th>
+                <th className="text-left py-2 px-3 font-medium text-[var(--color-paragraph)] w-16">L (m)</th>
+                <th className="text-left py-2 px-3 font-medium text-[var(--color-paragraph)] w-16">W (m)</th>
+                <th className="text-left py-2 px-3 font-medium text-[var(--color-paragraph)] w-20">Area (m²)</th>
+                <th className="text-left py-2 px-3 font-medium text-[var(--color-paragraph)] w-16">H (m)</th>
+                <th className="text-right py-2 px-3 font-medium text-[var(--color-paragraph)] w-20">Volume</th>
               </tr>
             </thead>
             <tbody>
@@ -224,19 +225,19 @@ export default function BuildingConditions() {
           </table>
         </div>
 
-        <div className="flex items-center justify-end gap-2 px-4 py-2 bg-[var(--color-surface)] border-t border-[var(--color-border)]">
+        <div className="flex items-center justify-end gap-1 px-4 py-2 bg-[var(--color-surface)] border-t border-[var(--color-border)]">
           <button
             onClick={removeVolumeRow}
             disabled={volumeRows.length <= 1}
-            className="px-3 py-1 text-sm text-[var(--color-muted)] hover:text-[var(--color-error)] disabled:opacity-40 transition-colors"
+            className="p-1.5 text-[var(--color-muted)] hover:text-[var(--color-error)] disabled:opacity-40 transition-colors"
           >
-            Remove
+            <Minus weight="bold" className="w-4 h-4" />
           </button>
           <button
             onClick={addVolumeRow}
-            className="px-3 py-1 text-sm text-[var(--color-title)] hover:text-[var(--color-muted)] transition-colors"
+            className="p-1.5 text-[var(--color-muted)] hover:text-[var(--color-title)] transition-colors"
           >
-            Add Row
+            <Plus weight="bold" className="w-4 h-4" />
           </button>
         </div>
       </div>

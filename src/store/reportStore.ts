@@ -20,7 +20,7 @@ const generateId = () => `${Date.now()}-${Math.random().toString(36).substr(2, 9
 const createDefaultVolumeRow = (): VolumeRow => ({
   id: generateId(),
   name: '',
-  method: 'l_w',
+  method: 'area',
   length: 0,
   width: 0,
   area: 0,
