@@ -3,6 +3,7 @@
 import { useReportStore } from '@/store/reportStore';
 import { Section, Input } from '@/components/ui';
 import { useMemo } from 'react';
+import React from 'react';
 
 export default function MeasurementData() {
   const {
@@ -10,6 +11,7 @@ export default function MeasurementData() {
     addMeasurementRow,
     removeMeasurementRow,
     updateMeasurementRow,
+    pasteMeasurementColumnData,
     getCalculatedResults,
   } = useReportStore();
 
@@ -22,6 +24,22 @@ export default function MeasurementData() {
       preFlow: row.preAch * totalVolume,
     }));
   }, [measurementRows, totalVolume]);
+
+  // Handle paste for multi-line data
+  const handlePaste = (
+    e: React.ClipboardEvent<HTMLInputElement>,
+    rowIndex: number,
+    field: 'depPressure' | 'depAch' | 'prePressure' | 'preAch'
+  ) => {
+    const text = e.clipboardData.getData('text');
+
+    if (text.includes('\n') || text.includes('\t')) {
+      e.preventDefault();
+      const lines = text.trim().split(/\r?\n/);
+      const values = lines.map((line) => line.split('\t')[0].trim());
+      pasteMeasurementColumnData(field, rowIndex, values);
+    }
+  };
 
   return (
     <Section
@@ -52,7 +70,7 @@ export default function MeasurementData() {
               </tr>
             </thead>
             <tbody>
-              {rowsWithFlows.map((row) => (
+              {rowsWithFlows.map((row, index) => (
                 <tr key={row.id} className="border-b border-[var(--color-border-light)]">
                   <td className="py-1.5 px-2">
                     <Input
@@ -64,6 +82,7 @@ export default function MeasurementData() {
                           depPressure: parseFloat(e.target.value) || 0,
                         })
                       }
+                      onPaste={(e) => handlePaste(e, index, 'depPressure')}
                       className="!py-1.5"
                     />
                   </td>
@@ -77,6 +96,7 @@ export default function MeasurementData() {
                           depAch: parseFloat(e.target.value) || 0,
                         })
                       }
+                      onPaste={(e) => handlePaste(e, index, 'depAch')}
                       className="!py-1.5"
                     />
                   </td>
@@ -95,6 +115,7 @@ export default function MeasurementData() {
                           prePressure: parseFloat(e.target.value) || 0,
                         })
                       }
+                      onPaste={(e) => handlePaste(e, index, 'prePressure')}
                       className="!py-1.5"
                     />
                   </td>
@@ -108,6 +129,7 @@ export default function MeasurementData() {
                           preAch: parseFloat(e.target.value) || 0,
                         })
                       }
+                      onPaste={(e) => handlePaste(e, index, 'preAch')}
                       className="!py-1.5"
                     />
                   </td>
