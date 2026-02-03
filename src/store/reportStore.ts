@@ -98,6 +98,7 @@ interface ReportState {
   addVolumeRow: () => void;
   removeVolumeRow: () => void;
   updateVolumeRow: (id: string, data: Partial<VolumeRow>) => void;
+  pasteVolumeRows: (text: string) => number;
 
   // Actions - Seal Items
   addSealItem: () => void;
@@ -187,6 +188,75 @@ export const useReportStore = create<ReportState>()(
           }),
           hasUnsavedChanges: true,
         })),
+
+      pasteVolumeRows: (text: string): number => {
+        const lines = text.trim().split(/\r?\n/).filter((line) => line.trim());
+        if (lines.length === 0) return 0;
+
+        const newRows: VolumeRow[] = [];
+
+        for (const line of lines) {
+          const cols = line.split('\t').map((c) => c.trim());
+          if (cols.length < 3) continue;
+
+          // Try to parse as numbers (skip header rows)
+          const nums = cols.slice(1).map((c) => parseFloat(c) || 0);
+          const hasValidNumbers = nums.some((n) => n > 0);
+          if (!hasValidNumbers) continue;
+
+          let row: VolumeRow;
+
+          if (cols.length >= 4) {
+            // 4+ columns: Name, Length, Width, Height (L×W method)
+            const [name, ...rest] = cols;
+            const [length, width, height] = rest.map((c) => parseFloat(c) || 0);
+            row = {
+              id: generateId(),
+              name,
+              method: 'l_w',
+              length,
+              width,
+              area: 0,
+              height,
+              subVolume: length * width * height,
+            };
+          } else {
+            // 3 columns: Name, Area, Height (area method)
+            const [name, areaStr, heightStr] = cols;
+            const area = parseFloat(areaStr) || 0;
+            const height = parseFloat(heightStr) || 0;
+            row = {
+              id: generateId(),
+              name,
+              method: 'area',
+              length: 0,
+              width: 0,
+              area,
+              height,
+              subVolume: area * height,
+            };
+          }
+
+          newRows.push(row);
+        }
+
+        if (newRows.length === 0) return 0;
+
+        set((state) => {
+          // If there's only one empty row, replace it; otherwise append
+          const hasOnlyEmptyRow =
+            state.volumeRows.length === 1 &&
+            !state.volumeRows[0].name &&
+            state.volumeRows[0].subVolume === 0;
+
+          return {
+            volumeRows: hasOnlyEmptyRow ? newRows : [...state.volumeRows, ...newRows],
+            hasUnsavedChanges: true,
+          };
+        });
+
+        return newRows.length;
+      },
 
       // Actions - Seal Items
       addSealItem: () =>
