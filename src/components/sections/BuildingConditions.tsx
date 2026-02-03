@@ -1,9 +1,8 @@
 'use client';
 
-import { useState } from 'react';
 import { useReportStore } from '@/store/reportStore';
 import { Section, Input, Select } from '@/components/ui';
-import { ClipboardText } from '@phosphor-icons/react';
+import React from 'react';
 
 export default function BuildingConditions() {
   const {
@@ -17,30 +16,55 @@ export default function BuildingConditions() {
     getCalculatedResults,
   } = useReportStore();
 
-  const [pasteMessage, setPasteMessage] = useState<string | null>(null);
-
-  const handlePasteFromClipboard = async () => {
-    try {
-      const text = await navigator.clipboard.readText();
-      const count = pasteVolumeRows(text);
-      if (count > 0) {
-        setPasteMessage(`Pasted ${count} row${count > 1 ? 's' : ''}`);
-      } else {
-        setPasteMessage('No valid rows found. Use format: Name, Area, Height or Name, L, W, H');
-      }
-      setTimeout(() => setPasteMessage(null), 3000);
-    } catch {
-      setPasteMessage('Clipboard access denied');
-      setTimeout(() => setPasteMessage(null), 3000);
-    }
-  };
-
   const { totalVolume } = getCalculatedResults();
 
   const calcMethodOptions = [
     { value: 'l_w', label: 'L × W' },
     { value: 'area', label: 'Area' },
   ];
+
+  // Handle paste in any input - if multi-line, fill down the column
+  const handlePaste = (
+    e: React.ClipboardEvent<HTMLInputElement>,
+    rowIndex: number,
+    field: 'name' | 'length' | 'width' | 'area' | 'height'
+  ) => {
+    const text = e.clipboardData.getData('text');
+
+    // Check if it's multi-row paste (has newlines or tabs)
+    if (text.includes('\n') || text.includes('\t')) {
+      e.preventDefault();
+
+      const lines = text.trim().split(/\r?\n/);
+
+      // If pasting into name field with tabs, treat as full row data
+      if (field === 'name' && text.includes('\t')) {
+        const count = pasteVolumeRows(text);
+        if (count > 0) return;
+      }
+
+      // Otherwise, fill down the single column
+      lines.forEach((line, i) => {
+        const targetIndex = rowIndex + i;
+        const value = line.split('\t')[0].trim(); // Take first cell if tabs
+
+        // Add rows if needed
+        while (volumeRows.length <= targetIndex) {
+          addVolumeRow();
+        }
+
+        const row = volumeRows[targetIndex];
+        if (!row) return;
+
+        if (field === 'name') {
+          updateVolumeRow(row.id, { name: value });
+        } else {
+          const num = parseFloat(value) || 0;
+          updateVolumeRow(row.id, { [field]: num });
+        }
+      });
+    }
+  };
 
   return (
     <Section title="Conditions" sectionNumber={2}>
@@ -113,13 +137,14 @@ export default function BuildingConditions() {
               </tr>
             </thead>
             <tbody>
-              {volumeRows.map((row) => (
+              {volumeRows.map((row, index) => (
                 <tr key={row.id} className="border-b border-[var(--color-border-light)]">
                   <td className="py-1.5 px-2">
                     <Input
                       placeholder="Room name"
                       value={row.name}
                       onChange={(e) => updateVolumeRow(row.id, { name: e.target.value })}
+                      onPaste={(e) => handlePaste(e, index, 'name')}
                       className="!py-1.5"
                     />
                   </td>
@@ -142,6 +167,7 @@ export default function BuildingConditions() {
                         onChange={(e) =>
                           updateVolumeRow(row.id, { length: parseFloat(e.target.value) || 0 })
                         }
+                        onPaste={(e) => handlePaste(e, index, 'length')}
                         className="!py-1.5"
                       />
                     ) : (
@@ -157,6 +183,7 @@ export default function BuildingConditions() {
                         onChange={(e) =>
                           updateVolumeRow(row.id, { width: parseFloat(e.target.value) || 0 })
                         }
+                        onPaste={(e) => handlePaste(e, index, 'width')}
                         className="!py-1.5"
                       />
                     ) : (
@@ -172,6 +199,7 @@ export default function BuildingConditions() {
                         onChange={(e) =>
                           updateVolumeRow(row.id, { area: parseFloat(e.target.value) || 0 })
                         }
+                        onPaste={(e) => handlePaste(e, index, 'area')}
                         className="!py-1.5"
                       />
                     ) : (
@@ -186,6 +214,7 @@ export default function BuildingConditions() {
                       onChange={(e) =>
                         updateVolumeRow(row.id, { height: parseFloat(e.target.value) || 0 })
                       }
+                      onPaste={(e) => handlePaste(e, index, 'height')}
                       className="!py-1.5"
                     />
                   </td>
@@ -198,35 +227,20 @@ export default function BuildingConditions() {
           </table>
         </div>
 
-        <div className="flex items-center justify-between px-4 py-2 bg-[var(--color-surface)] border-t border-[var(--color-border)]">
-          <div className="flex items-center gap-2">
-            <button
-              onClick={handlePasteFromClipboard}
-              className="flex items-center gap-1.5 px-3 py-1 text-sm text-[var(--color-title)] hover:text-[var(--color-muted)] transition-colors print:hidden"
-              title="Paste rows from Excel (Name, Area, Height) or (Name, L, W, H)"
-            >
-              <ClipboardText weight="bold" className="w-4 h-4" />
-              Paste from Excel
-            </button>
-            {pasteMessage && (
-              <span className="text-xs text-[var(--color-muted)]">{pasteMessage}</span>
-            )}
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={removeVolumeRow}
-              disabled={volumeRows.length <= 1}
-              className="px-3 py-1 text-sm text-[var(--color-muted)] hover:text-[var(--color-error)] disabled:opacity-40 transition-colors"
-            >
-              Remove
-            </button>
-            <button
-              onClick={addVolumeRow}
-              className="px-3 py-1 text-sm text-[var(--color-title)] hover:text-[var(--color-muted)] transition-colors"
-            >
-              Add Row
-            </button>
-          </div>
+        <div className="flex items-center justify-end gap-2 px-4 py-2 bg-[var(--color-surface)] border-t border-[var(--color-border)]">
+          <button
+            onClick={removeVolumeRow}
+            disabled={volumeRows.length <= 1}
+            className="px-3 py-1 text-sm text-[var(--color-muted)] hover:text-[var(--color-error)] disabled:opacity-40 transition-colors"
+          >
+            Remove
+          </button>
+          <button
+            onClick={addVolumeRow}
+            className="px-3 py-1 text-sm text-[var(--color-title)] hover:text-[var(--color-muted)] transition-colors"
+          >
+            Add Row
+          </button>
         </div>
       </div>
     </Section>

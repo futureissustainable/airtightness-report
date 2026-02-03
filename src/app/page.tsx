@@ -49,9 +49,9 @@ export default function Home() {
     <>
       {/* Unsaved Changes Banner */}
       {hasUnsavedChanges && (
-        <div className="fixed top-0 left-0 right-0 z-50 bg-[var(--color-title)] text-white px-4 py-2 flex items-center justify-between print:hidden">
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-50 bg-[var(--color-title)] text-white px-4 py-2 flex items-center gap-4 shadow-lg print:hidden">
           <span className="text-sm">
-            {currentReportId ? 'You have unsaved changes' : 'New report — save to keep your changes'}
+            {currentReportId ? 'Unsaved changes' : 'New report'}
           </span>
           <button
             onClick={handleSave}
@@ -64,7 +64,7 @@ export default function Home() {
       )}
 
       {/* Scroll Progress Bar - Fixed at top */}
-      <div className={`fixed left-0 right-0 h-[2px] bg-[var(--color-border)] z-40 print:hidden ${hasUnsavedChanges ? 'top-[40px]' : 'top-0'}`}>
+      <div className="fixed top-0 left-0 right-0 h-[2px] bg-[var(--color-border)] z-40 print:hidden">
         <div
           className="h-full bg-[var(--color-title)] transition-all duration-100"
           style={{ width: `${scrollProgress}%` }}
@@ -90,7 +90,7 @@ export default function Home() {
       </div>
 
       {/* Main Content */}
-      <main className={`content-padding py-10 print:p-0 ${hasUnsavedChanges ? 'pt-16' : ''}`}>
+      <main className="content-padding py-10 print:p-0">
         <div className="max-w-5xl mx-auto print:max-w-none">
           {/* Title Strip */}
           <div style={{ backgroundColor: '#0a0b0d', padding: '2rem', marginBottom: '1.5rem', textAlign: 'center' }}>
