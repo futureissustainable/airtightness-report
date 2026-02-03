@@ -43,18 +43,15 @@ export default function BuildingConditions() {
         if (count > 0) return;
       }
 
-      // Otherwise, fill down the single column
+      // Otherwise, fill down the single column (only existing rows)
       lines.forEach((line, i) => {
         const targetIndex = rowIndex + i;
-        const value = line.split('\t')[0].trim(); // Take first cell if tabs
 
-        // Add rows if needed
-        while (volumeRows.length <= targetIndex) {
-          addVolumeRow();
-        }
+        // Only update existing rows, ignore overflow
+        if (targetIndex >= volumeRows.length) return;
 
+        const value = line.split('\t')[0].trim();
         const row = volumeRows[targetIndex];
-        if (!row) return;
 
         if (field === 'name') {
           updateVolumeRow(row.id, { name: value });
