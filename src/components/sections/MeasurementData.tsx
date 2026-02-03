@@ -26,7 +26,7 @@ export default function MeasurementData() {
   return (
     <Section
       title="Data"
-      sectionNumber={5}
+      sectionNumber={6}
       onAdd={addMeasurementRow}
       onRemove={measurementRows.length > 1 ? removeMeasurementRow : undefined}
     >

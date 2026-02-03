@@ -5,6 +5,7 @@ import { Card } from '@/components/ui';
 import {
   GeneralInformation,
   BuildingConditions,
+  VolumeCalculation,
   BuildingPreparation,
   LeakageIdentification,
   MeasurementData,
@@ -114,6 +115,10 @@ export default function Home() {
 
             <Card>
               <BuildingConditions />
+            </Card>
+
+            <Card>
+              <VolumeCalculation />
             </Card>
 
             <Card>
