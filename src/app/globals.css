@@ -208,12 +208,22 @@ input[type="number"] {
   color: var(--color-dark-paragraph);
 }
 
-.dark-section label {
+.dark-section label,
+.dark-section h1,
+.dark-section h2,
+.dark-section h3,
+.dark-section h4,
+.dark-section h5,
+.dark-section h6 {
   color: var(--color-dark-title);
 }
 
 .dark-section p {
   color: var(--color-dark-paragraph);
+}
+
+.dark-section .text-base {
+  color: var(--color-dark-title);
 }
 
 /* Button Base */

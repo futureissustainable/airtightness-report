@@ -67,7 +67,7 @@ export default function BuildingConditions() {
       </div>
 
       {/* Volume Calculation */}
-      <div className="border border-[var(--color-border)] rounded-lg overflow-hidden">
+      <div className="border border-[var(--color-border)] overflow-hidden">
         <div className="flex items-center justify-between px-4 py-3 bg-[var(--color-surface)] border-b border-[var(--color-border)]">
           <h4>Internal Volume Calculation</h4>
           <div className="text-right">

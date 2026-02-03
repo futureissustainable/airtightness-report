@@ -49,7 +49,7 @@ export default function ImageUpload({
           <img
             src={imageData}
             alt="Uploaded"
-            className="w-full max-h-48 object-contain rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)]"
+            className="w-full max-h-48 object-contain border border-[var(--color-border)] bg-[var(--color-surface)]"
           />
           <button
             onClick={handleRemove}
@@ -63,10 +63,7 @@ export default function ImageUpload({
         <button
           type="button"
           onClick={() => inputRef.current?.click()}
-          className="w-full py-6 border border-dashed border-[var(--color-border)] rounded-lg
-            flex items-center justify-center gap-2 text-[var(--color-muted)]
-            hover:border-[var(--color-title)] hover:text-[var(--color-title)]
-            transition-colors cursor-pointer"
+          className="w-full py-6 border border-dashed border-[var(--color-border)] flex items-center justify-center gap-2 text-[var(--color-muted)] hover:border-[var(--color-title)] hover:text-[var(--color-title)] transition-colors cursor-pointer"
         >
           <UploadSimple weight="bold" className="w-4 h-4" />
           <span className="text-sm">Upload image</span>

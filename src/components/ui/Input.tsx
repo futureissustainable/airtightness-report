@@ -26,7 +26,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             id={id}
             className={`
               w-full px-3 py-2.5 text-sm
-              bg-white border border-[var(--color-border)] rounded-lg
+              bg-white border border-[var(--color-border)]
               text-[var(--color-title)] placeholder:text-[var(--color-muted)]
               focus:border-[var(--color-title)] focus:ring-2 focus:ring-[var(--color-title)]/10
               disabled:bg-[var(--color-surface)] disabled:cursor-not-allowed disabled:opacity-70
