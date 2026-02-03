@@ -1,7 +1,9 @@
 'use client';
 
+import { useState } from 'react';
 import { useReportStore } from '@/store/reportStore';
 import { Section, Input, Select } from '@/components/ui';
+import { ClipboardText } from '@phosphor-icons/react';
 
 export default function BuildingConditions() {
   const {
@@ -11,8 +13,27 @@ export default function BuildingConditions() {
     addVolumeRow,
     removeVolumeRow,
     updateVolumeRow,
+    pasteVolumeRows,
     getCalculatedResults,
   } = useReportStore();
+
+  const [pasteMessage, setPasteMessage] = useState<string | null>(null);
+
+  const handlePasteFromClipboard = async () => {
+    try {
+      const text = await navigator.clipboard.readText();
+      const count = pasteVolumeRows(text);
+      if (count > 0) {
+        setPasteMessage(`Pasted ${count} row${count > 1 ? 's' : ''}`);
+      } else {
+        setPasteMessage('No valid rows found. Use format: Name, Area, Height or Name, L, W, H');
+      }
+      setTimeout(() => setPasteMessage(null), 3000);
+    } catch {
+      setPasteMessage('Clipboard access denied');
+      setTimeout(() => setPasteMessage(null), 3000);
+    }
+  };
 
   const { totalVolume } = getCalculatedResults();
 
@@ -177,20 +198,35 @@ export default function BuildingConditions() {
           </table>
         </div>
 
-        <div className="flex items-center justify-end gap-2 px-4 py-2 bg-[var(--color-surface)] border-t border-[var(--color-border)]">
-          <button
-            onClick={removeVolumeRow}
-            disabled={volumeRows.length <= 1}
-            className="px-3 py-1 text-sm text-[var(--color-muted)] hover:text-[var(--color-error)] disabled:opacity-40 transition-colors"
-          >
-            Remove
-          </button>
-          <button
-            onClick={addVolumeRow}
-            className="px-3 py-1 text-sm text-[var(--color-title)] hover:text-[var(--color-muted)] transition-colors"
-          >
-            Add Row
-          </button>
+        <div className="flex items-center justify-between px-4 py-2 bg-[var(--color-surface)] border-t border-[var(--color-border)]">
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handlePasteFromClipboard}
+              className="flex items-center gap-1.5 px-3 py-1 text-sm text-[var(--color-title)] hover:text-[var(--color-muted)] transition-colors print:hidden"
+              title="Paste rows from Excel (Name, Area, Height) or (Name, L, W, H)"
+            >
+              <ClipboardText weight="bold" className="w-4 h-4" />
+              Paste from Excel
+            </button>
+            {pasteMessage && (
+              <span className="text-xs text-[var(--color-muted)]">{pasteMessage}</span>
+            )}
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={removeVolumeRow}
+              disabled={volumeRows.length <= 1}
+              className="px-3 py-1 text-sm text-[var(--color-muted)] hover:text-[var(--color-error)] disabled:opacity-40 transition-colors"
+            >
+              Remove
+            </button>
+            <button
+              onClick={addVolumeRow}
+              className="px-3 py-1 text-sm text-[var(--color-title)] hover:text-[var(--color-muted)] transition-colors"
+            >
+              Add Row
+            </button>
+          </div>
         </div>
       </div>
     </Section>

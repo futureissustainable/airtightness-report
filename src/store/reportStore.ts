@@ -76,6 +76,7 @@ const getDefaultResults = (): Results => ({
 interface ReportState {
   // Current Report Data
   currentReportId: string | null;
+  hasUnsavedChanges: boolean;
   generalInfo: GeneralInfo;
   buildingConditions: BuildingConditions;
   volumeRows: VolumeRow[];
@@ -97,6 +98,7 @@ interface ReportState {
   addVolumeRow: () => void;
   removeVolumeRow: () => void;
   updateVolumeRow: (id: string, data: Partial<VolumeRow>) => void;
+  pasteVolumeRows: (text: string) => number;
 
   // Actions - Seal Items
   addSealItem: () => void;
@@ -122,6 +124,7 @@ interface ReportState {
   deleteReport: (id: string) => void;
   createNewReport: () => void;
   importLegacyReport: (code: string) => boolean;
+  exportLegacyCode: () => string;
 
   // Computed Values
   getCalculatedResults: () => CalculatedResults;
@@ -133,6 +136,7 @@ export const useReportStore = create<ReportState>()(
     (set, get) => ({
       // Initial State
       currentReportId: null,
+      hasUnsavedChanges: false,
       generalInfo: getDefaultGeneralInfo(),
       buildingConditions: getDefaultBuildingConditions(),
       volumeRows: [createDefaultVolumeRow()],
@@ -146,18 +150,21 @@ export const useReportStore = create<ReportState>()(
       updateGeneralInfo: (info) =>
         set((state) => ({
           generalInfo: { ...state.generalInfo, ...info },
+          hasUnsavedChanges: true,
         })),
 
       // Actions - Building Conditions
       updateBuildingConditions: (conditions) =>
         set((state) => ({
           buildingConditions: { ...state.buildingConditions, ...conditions },
+          hasUnsavedChanges: true,
         })),
 
       // Actions - Volume Rows
       addVolumeRow: () =>
         set((state) => ({
           volumeRows: [...state.volumeRows, createDefaultVolumeRow()],
+          hasUnsavedChanges: true,
         })),
 
       removeVolumeRow: () =>
@@ -165,6 +172,7 @@ export const useReportStore = create<ReportState>()(
           volumeRows: state.volumeRows.length > 1
             ? state.volumeRows.slice(0, -1)
             : state.volumeRows,
+          hasUnsavedChanges: true,
         })),
 
       updateVolumeRow: (id, data) =>
@@ -172,7 +180,6 @@ export const useReportStore = create<ReportState>()(
           volumeRows: state.volumeRows.map((row) => {
             if (row.id !== id) return row;
             const updated = { ...row, ...data };
-            // Recalculate sub-volume
             if (updated.method === 'l_w') {
               updated.subVolume = updated.length * updated.width * updated.height;
             } else {
@@ -180,12 +187,83 @@ export const useReportStore = create<ReportState>()(
             }
             return updated;
           }),
+          hasUnsavedChanges: true,
         })),
+
+      pasteVolumeRows: (text: string): number => {
+        const lines = text.trim().split(/\r?\n/).filter((line) => line.trim());
+        if (lines.length === 0) return 0;
+
+        const newRows: VolumeRow[] = [];
+
+        for (const line of lines) {
+          const cols = line.split('\t').map((c) => c.trim());
+          if (cols.length < 3) continue;
+
+          // Try to parse as numbers (skip header rows)
+          const nums = cols.slice(1).map((c) => parseFloat(c) || 0);
+          const hasValidNumbers = nums.some((n) => n > 0);
+          if (!hasValidNumbers) continue;
+
+          let row: VolumeRow;
+
+          if (cols.length >= 4) {
+            // 4+ columns: Name, Length, Width, Height (L×W method)
+            const [name, ...rest] = cols;
+            const [length, width, height] = rest.map((c) => parseFloat(c) || 0);
+            row = {
+              id: generateId(),
+              name,
+              method: 'l_w',
+              length,
+              width,
+              area: 0,
+              height,
+              subVolume: length * width * height,
+            };
+          } else {
+            // 3 columns: Name, Area, Height (area method)
+            const [name, areaStr, heightStr] = cols;
+            const area = parseFloat(areaStr) || 0;
+            const height = parseFloat(heightStr) || 0;
+            row = {
+              id: generateId(),
+              name,
+              method: 'area',
+              length: 0,
+              width: 0,
+              area,
+              height,
+              subVolume: area * height,
+            };
+          }
+
+          newRows.push(row);
+        }
+
+        if (newRows.length === 0) return 0;
+
+        set((state) => {
+          // If there's only one empty row, replace it; otherwise append
+          const hasOnlyEmptyRow =
+            state.volumeRows.length === 1 &&
+            !state.volumeRows[0].name &&
+            state.volumeRows[0].subVolume === 0;
+
+          return {
+            volumeRows: hasOnlyEmptyRow ? newRows : [...state.volumeRows, ...newRows],
+            hasUnsavedChanges: true,
+          };
+        });
+
+        return newRows.length;
+      },
 
       // Actions - Seal Items
       addSealItem: () =>
         set((state) => ({
           sealItems: [...state.sealItems, createDefaultSealItem()],
+          hasUnsavedChanges: true,
         })),
 
       removeSealItem: () =>
@@ -193,6 +271,7 @@ export const useReportStore = create<ReportState>()(
           sealItems: state.sealItems.length > 0
             ? state.sealItems.slice(0, -1)
             : state.sealItems,
+          hasUnsavedChanges: true,
         })),
 
       updateSealItem: (id, data) =>
@@ -200,12 +279,14 @@ export const useReportStore = create<ReportState>()(
           sealItems: state.sealItems.map((item) =>
             item.id === id ? { ...item, ...data } : item
           ),
+          hasUnsavedChanges: true,
         })),
 
       // Actions - Leakage Items
       addLeakageItem: () =>
         set((state) => ({
           leakageItems: [...state.leakageItems, createDefaultLeakageItem()],
+          hasUnsavedChanges: true,
         })),
 
       removeLeakageItem: () =>
@@ -213,6 +294,7 @@ export const useReportStore = create<ReportState>()(
           leakageItems: state.leakageItems.length > 0
             ? state.leakageItems.slice(0, -1)
             : state.leakageItems,
+          hasUnsavedChanges: true,
         })),
 
       updateLeakageItem: (id, data) =>
@@ -220,12 +302,14 @@ export const useReportStore = create<ReportState>()(
           leakageItems: state.leakageItems.map((item) =>
             item.id === id ? { ...item, ...data } : item
           ),
+          hasUnsavedChanges: true,
         })),
 
       // Actions - Measurement Rows
       addMeasurementRow: () =>
         set((state) => ({
           measurementRows: [...state.measurementRows, createDefaultMeasurementRow()],
+          hasUnsavedChanges: true,
         })),
 
       removeMeasurementRow: () =>
@@ -233,6 +317,7 @@ export const useReportStore = create<ReportState>()(
           measurementRows: state.measurementRows.length > 1
             ? state.measurementRows.slice(0, -1)
             : state.measurementRows,
+          hasUnsavedChanges: true,
         })),
 
       updateMeasurementRow: (id, data) =>
@@ -240,12 +325,14 @@ export const useReportStore = create<ReportState>()(
           measurementRows: state.measurementRows.map((row) =>
             row.id === id ? { ...row, ...data } : row
           ),
+          hasUnsavedChanges: true,
         })),
 
       // Actions - Results
       updateResults: (results) =>
         set((state) => ({
           results: { ...state.results, ...results },
+          hasUnsavedChanges: true,
         })),
 
       // Actions - Report Management
@@ -272,6 +359,7 @@ export const useReportStore = create<ReportState>()(
 
         set((state) => ({
           currentReportId: report.id,
+          hasUnsavedChanges: false,
           savedReports: state.currentReportId
             ? state.savedReports.map((r) => (r.id === report.id ? report : r))
             : [...state.savedReports, report],
@@ -285,6 +373,7 @@ export const useReportStore = create<ReportState>()(
 
         set({
           currentReportId: report.id,
+          hasUnsavedChanges: false,
           generalInfo: report.generalInfo,
           buildingConditions: report.buildingConditions,
           volumeRows: report.volumeRows,
@@ -304,6 +393,7 @@ export const useReportStore = create<ReportState>()(
       createNewReport: () =>
         set({
           currentReportId: null,
+          hasUnsavedChanges: false,
           generalInfo: getDefaultGeneralInfo(),
           buildingConditions: getDefaultBuildingConditions(),
           volumeRows: [createDefaultVolumeRow()],
@@ -401,6 +491,7 @@ export const useReportStore = create<ReportState>()(
 
           set({
             currentReportId: null,
+            hasUnsavedChanges: true,
             generalInfo,
             buildingConditions,
             volumeRows,
@@ -414,6 +505,53 @@ export const useReportStore = create<ReportState>()(
         } catch {
           return false;
         }
+      },
+
+      exportLegacyCode: (): string => {
+        const state = get();
+
+        const data = {
+          staticInputs: {
+            'project-name': state.generalInfo.projectName,
+            'report-number': state.generalInfo.reportNumber,
+            'project-address': state.generalInfo.projectAddress,
+            'technician-name': state.generalInfo.technicianName,
+            'test-date': state.generalInfo.testDate,
+            'software-version': state.generalInfo.softwareVersion,
+            'envelope-area': String(state.buildingConditions.envelopeArea),
+            'floor-area': String(state.buildingConditions.floorArea),
+            'internal-temp': String(state.buildingConditions.internalTemp),
+            'external-temp': String(state.buildingConditions.externalTemp),
+            'required-n50': String(state.results.requiredN50),
+            'dep-n50': String(state.results.depN50),
+            'pre-n50': String(state.results.preN50),
+          },
+          volumeRows: state.volumeRows.map((row) => ({
+            name: row.name,
+            method: row.method,
+            l: String(row.length),
+            w: String(row.width),
+            a: String(row.area),
+            h: String(row.height),
+          })),
+          sealItems: state.sealItems.map((item) => ({
+            desc: item.description,
+            img: item.imageData || '',
+          })),
+          leakageItems: state.leakageItems.map((item) => ({
+            desc: item.description,
+            sol: item.solution,
+            img: item.imageData || '',
+          })),
+          measurementRows: state.measurementRows.map((row) => ({
+            dep_p: String(row.depPressure),
+            dep_ach: String(row.depAch),
+            pre_p: String(row.prePressure),
+            pre_ach: String(row.preAch),
+          })),
+        };
+
+        return btoa(JSON.stringify(data));
       },
 
       // Computed Values

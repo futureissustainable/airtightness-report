@@ -12,14 +12,18 @@ import {
   Charts,
   SavedReports,
 } from '@/components/sections';
+import { useReportStore } from '@/store/reportStore';
 import {
   Folder,
   DownloadSimple,
+  FloppyDisk,
 } from '@phosphor-icons/react';
 
 export default function Home() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
+
+  const { hasUnsavedChanges, currentReportId, generalInfo, saveReport } = useReportStore();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -37,10 +41,30 @@ export default function Home() {
     window.print();
   };
 
+  const handleSave = () => {
+    saveReport(generalInfo.projectName || 'Untitled Report');
+  };
+
   return (
     <>
+      {/* Unsaved Changes Banner */}
+      {hasUnsavedChanges && (
+        <div className="fixed top-0 left-0 right-0 z-50 bg-[var(--color-title)] text-white px-4 py-2 flex items-center justify-between print:hidden">
+          <span className="text-sm">
+            {currentReportId ? 'You have unsaved changes' : 'New report — save to keep your changes'}
+          </span>
+          <button
+            onClick={handleSave}
+            className="flex items-center gap-1.5 px-3 py-1 bg-white/20 hover:bg-white/30 text-sm transition-colors"
+          >
+            <FloppyDisk weight="bold" className="w-4 h-4" />
+            Save
+          </button>
+        </div>
+      )}
+
       {/* Scroll Progress Bar - Fixed at top */}
-      <div className="fixed top-0 left-0 right-0 h-[2px] bg-[var(--color-border)] z-50 print:hidden">
+      <div className={`fixed left-0 right-0 h-[2px] bg-[var(--color-border)] z-40 print:hidden ${hasUnsavedChanges ? 'top-[40px]' : 'top-0'}`}>
         <div
           className="h-full bg-[var(--color-title)] transition-all duration-100"
           style={{ width: `${scrollProgress}%` }}
@@ -66,7 +90,7 @@ export default function Home() {
       </div>
 
       {/* Main Content */}
-      <main className="content-padding py-10 print:p-0">
+      <main className={`content-padding py-10 print:p-0 ${hasUnsavedChanges ? 'pt-16' : ''}`}>
         <div className="max-w-5xl mx-auto print:max-w-none">
           {/* Title Strip */}
           <div style={{ backgroundColor: '#0a0b0d', padding: '2rem', marginBottom: '1.5rem', textAlign: 'center' }}>
