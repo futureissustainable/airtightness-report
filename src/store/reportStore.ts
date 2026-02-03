@@ -115,6 +115,7 @@ interface ReportState {
   addMeasurementRow: () => void;
   removeMeasurementRow: () => void;
   updateMeasurementRow: (id: string, data: Partial<MeasurementRow>) => void;
+  pasteMeasurementColumnData: (field: 'depPressure' | 'depAch' | 'prePressure' | 'preAch', startIndex: number, values: string[]) => number;
 
   // Actions - Results
   updateResults: (results: Partial<Results>) => void;
@@ -379,6 +380,44 @@ export const useReportStore = create<ReportState>()(
           ),
           hasUnsavedChanges: true,
         })),
+
+      pasteMeasurementColumnData: (field, startIndex, values): number => {
+        // Safety: limit to 500 rows max
+        const safeValues = values.slice(0, 500);
+        if (safeValues.length === 0) return 0;
+
+        set((state) => {
+          const newRows = [...state.measurementRows];
+
+          // Calculate how many new rows we need
+          const totalNeeded = startIndex + safeValues.length;
+          const rowsToAdd = Math.max(0, totalNeeded - newRows.length);
+
+          // Add new rows if needed
+          for (let i = 0; i < rowsToAdd; i++) {
+            newRows.push(createDefaultMeasurementRow());
+          }
+
+          // Update the values
+          safeValues.forEach((value, i) => {
+            const targetIndex = startIndex + i;
+            const row = newRows[targetIndex];
+            const num = parseFloat(value) || 0;
+
+            if (field === 'depPressure') row.depPressure = num;
+            else if (field === 'depAch') row.depAch = num;
+            else if (field === 'prePressure') row.prePressure = num;
+            else if (field === 'preAch') row.preAch = num;
+          });
+
+          return {
+            measurementRows: newRows,
+            hasUnsavedChanges: true,
+          };
+        });
+
+        return safeValues.length;
+      },
 
       // Actions - Results
       updateResults: (results) =>
