@@ -14,7 +14,7 @@ export default function LeakageIdentification() {
   return (
     <Section
       title="Leakage"
-      sectionNumber={4}
+      sectionNumber={5}
       onAdd={addLeakageItem}
       onRemove={leakageItems.length > 0 ? removeLeakageItem : undefined}
     >

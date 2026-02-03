@@ -14,7 +14,7 @@ export default function BuildingPreparation() {
   return (
     <Section
       title="Preparation"
-      sectionNumber={3}
+      sectionNumber={4}
       onAdd={addSealItem}
       onRemove={sealItems.length > 0 ? removeSealItem : undefined}
     >
