@@ -76,6 +76,7 @@ const getDefaultResults = (): Results => ({
 interface ReportState {
   // Current Report Data
   currentReportId: string | null;
+  hasUnsavedChanges: boolean;
   generalInfo: GeneralInfo;
   buildingConditions: BuildingConditions;
   volumeRows: VolumeRow[];
@@ -133,6 +134,7 @@ export const useReportStore = create<ReportState>()(
     (set, get) => ({
       // Initial State
       currentReportId: null,
+      hasUnsavedChanges: false,
       generalInfo: getDefaultGeneralInfo(),
       buildingConditions: getDefaultBuildingConditions(),
       volumeRows: [createDefaultVolumeRow()],
@@ -146,18 +148,21 @@ export const useReportStore = create<ReportState>()(
       updateGeneralInfo: (info) =>
         set((state) => ({
           generalInfo: { ...state.generalInfo, ...info },
+          hasUnsavedChanges: true,
         })),
 
       // Actions - Building Conditions
       updateBuildingConditions: (conditions) =>
         set((state) => ({
           buildingConditions: { ...state.buildingConditions, ...conditions },
+          hasUnsavedChanges: true,
         })),
 
       // Actions - Volume Rows
       addVolumeRow: () =>
         set((state) => ({
           volumeRows: [...state.volumeRows, createDefaultVolumeRow()],
+          hasUnsavedChanges: true,
         })),
 
       removeVolumeRow: () =>
@@ -165,6 +170,7 @@ export const useReportStore = create<ReportState>()(
           volumeRows: state.volumeRows.length > 1
             ? state.volumeRows.slice(0, -1)
             : state.volumeRows,
+          hasUnsavedChanges: true,
         })),
 
       updateVolumeRow: (id, data) =>
@@ -172,7 +178,6 @@ export const useReportStore = create<ReportState>()(
           volumeRows: state.volumeRows.map((row) => {
             if (row.id !== id) return row;
             const updated = { ...row, ...data };
-            // Recalculate sub-volume
             if (updated.method === 'l_w') {
               updated.subVolume = updated.length * updated.width * updated.height;
             } else {
@@ -180,12 +185,14 @@ export const useReportStore = create<ReportState>()(
             }
             return updated;
           }),
+          hasUnsavedChanges: true,
         })),
 
       // Actions - Seal Items
       addSealItem: () =>
         set((state) => ({
           sealItems: [...state.sealItems, createDefaultSealItem()],
+          hasUnsavedChanges: true,
         })),
 
       removeSealItem: () =>
@@ -193,6 +200,7 @@ export const useReportStore = create<ReportState>()(
           sealItems: state.sealItems.length > 0
             ? state.sealItems.slice(0, -1)
             : state.sealItems,
+          hasUnsavedChanges: true,
         })),
 
       updateSealItem: (id, data) =>
@@ -200,12 +208,14 @@ export const useReportStore = create<ReportState>()(
           sealItems: state.sealItems.map((item) =>
             item.id === id ? { ...item, ...data } : item
           ),
+          hasUnsavedChanges: true,
         })),
 
       // Actions - Leakage Items
       addLeakageItem: () =>
         set((state) => ({
           leakageItems: [...state.leakageItems, createDefaultLeakageItem()],
+          hasUnsavedChanges: true,
         })),
 
       removeLeakageItem: () =>
@@ -213,6 +223,7 @@ export const useReportStore = create<ReportState>()(
           leakageItems: state.leakageItems.length > 0
             ? state.leakageItems.slice(0, -1)
             : state.leakageItems,
+          hasUnsavedChanges: true,
         })),
 
       updateLeakageItem: (id, data) =>
@@ -220,12 +231,14 @@ export const useReportStore = create<ReportState>()(
           leakageItems: state.leakageItems.map((item) =>
             item.id === id ? { ...item, ...data } : item
           ),
+          hasUnsavedChanges: true,
         })),
 
       // Actions - Measurement Rows
       addMeasurementRow: () =>
         set((state) => ({
           measurementRows: [...state.measurementRows, createDefaultMeasurementRow()],
+          hasUnsavedChanges: true,
         })),
 
       removeMeasurementRow: () =>
@@ -233,6 +246,7 @@ export const useReportStore = create<ReportState>()(
           measurementRows: state.measurementRows.length > 1
             ? state.measurementRows.slice(0, -1)
             : state.measurementRows,
+          hasUnsavedChanges: true,
         })),
 
       updateMeasurementRow: (id, data) =>
@@ -240,12 +254,14 @@ export const useReportStore = create<ReportState>()(
           measurementRows: state.measurementRows.map((row) =>
             row.id === id ? { ...row, ...data } : row
           ),
+          hasUnsavedChanges: true,
         })),
 
       // Actions - Results
       updateResults: (results) =>
         set((state) => ({
           results: { ...state.results, ...results },
+          hasUnsavedChanges: true,
         })),
 
       // Actions - Report Management
@@ -272,6 +288,7 @@ export const useReportStore = create<ReportState>()(
 
         set((state) => ({
           currentReportId: report.id,
+          hasUnsavedChanges: false,
           savedReports: state.currentReportId
             ? state.savedReports.map((r) => (r.id === report.id ? report : r))
             : [...state.savedReports, report],
@@ -285,6 +302,7 @@ export const useReportStore = create<ReportState>()(
 
         set({
           currentReportId: report.id,
+          hasUnsavedChanges: false,
           generalInfo: report.generalInfo,
           buildingConditions: report.buildingConditions,
           volumeRows: report.volumeRows,
@@ -304,6 +322,7 @@ export const useReportStore = create<ReportState>()(
       createNewReport: () =>
         set({
           currentReportId: null,
+          hasUnsavedChanges: false,
           generalInfo: getDefaultGeneralInfo(),
           buildingConditions: getDefaultBuildingConditions(),
           volumeRows: [createDefaultVolumeRow()],
@@ -401,6 +420,7 @@ export const useReportStore = create<ReportState>()(
 
           set({
             currentReportId: null,
+            hasUnsavedChanges: true,
             generalInfo,
             buildingConditions,
             volumeRows,
