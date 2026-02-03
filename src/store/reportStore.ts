@@ -41,15 +41,17 @@ const createDefaultLeakageItem = (): LeakageItem => ({
   imageData: null,
 });
 
-const createDefaultMeasurementRow = (): MeasurementRow => ({
+const createDefaultMeasurementRow = (pressure: number = 0): MeasurementRow => ({
   id: generateId(),
-  depPressure: 0,
+  depPressure: pressure,
   depAch: 0,
   depFlow: 0,
-  prePressure: 0,
+  prePressure: pressure,
   preAch: 0,
   preFlow: 0,
 });
+
+const defaultPressures = [50, 40, 30, 20, 10];
 
 const getDefaultGeneralInfo = (): GeneralInfo => ({
   projectName: '',
@@ -145,7 +147,7 @@ export const useReportStore = create<ReportState>()(
       volumeRows: [createDefaultVolumeRow()],
       sealItems: [createDefaultSealItem()],
       leakageItems: [createDefaultLeakageItem()],
-      measurementRows: Array.from({ length: 5 }, () => createDefaultMeasurementRow()),
+      measurementRows: defaultPressures.map((p) => createDefaultMeasurementRow(p)),
       results: getDefaultResults(),
       savedReports: [],
 
@@ -490,7 +492,7 @@ export const useReportStore = create<ReportState>()(
           volumeRows: [createDefaultVolumeRow()],
           sealItems: [createDefaultSealItem()],
           leakageItems: [createDefaultLeakageItem()],
-          measurementRows: Array.from({ length: 5 }, () => createDefaultMeasurementRow()),
+          measurementRows: defaultPressures.map((p) => createDefaultMeasurementRow(p)),
           results: getDefaultResults(),
         }),
 
@@ -577,7 +579,7 @@ export const useReportStore = create<ReportState>()(
           if (sealItems.length === 0) sealItems.push(createDefaultSealItem());
           if (leakageItems.length === 0) leakageItems.push(createDefaultLeakageItem());
           if (measurementRows.length === 0) {
-            for (let i = 0; i < 5; i++) measurementRows.push(createDefaultMeasurementRow());
+            defaultPressures.forEach((p) => measurementRows.push(createDefaultMeasurementRow(p)));
           }
 
           set({

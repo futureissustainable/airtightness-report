@@ -165,7 +165,15 @@ export default function Home() {
             grid-template-rows: 1fr !important;
             opacity: 1 !important;
           }
-          .space-y-6 > * + * { margin-top: 0.75rem !important; }
+          .space-y-6 > * {
+            page-break-before: always;
+            break-before: page;
+            margin-top: 0 !important;
+          }
+          .space-y-6 > *:first-child {
+            page-break-before: avoid;
+            break-before: avoid;
+          }
           h1 { font-size: 24pt !important; }
           h3 { font-size: 12pt !important; }
           h4 { font-size: 11pt !important; }
