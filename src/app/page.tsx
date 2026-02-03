@@ -17,13 +17,14 @@ import {
   Folder,
   DownloadSimple,
   FloppyDisk,
+  Broom,
 } from '@phosphor-icons/react';
 
 export default function Home() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
 
-  const { hasUnsavedChanges, currentReportId, generalInfo, saveReport } = useReportStore();
+  const { hasUnsavedChanges, currentReportId, generalInfo, saveReport, cleanupEmptyRows } = useReportStore();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -79,6 +80,13 @@ export default function Home() {
           title="Saved Reports"
         >
           <Folder weight="bold" className="w-5 h-5" />
+        </button>
+        <button
+          onClick={() => cleanupEmptyRows()}
+          className="w-12 h-12 rounded-full bg-[var(--color-surface)] text-[var(--color-title)] shadow-lg border border-[var(--color-border)] flex items-center justify-center hover:bg-[var(--color-background)] transition-colors"
+          title="Clean up empty rows"
+        >
+          <Broom weight="bold" className="w-5 h-5" />
         </button>
         <button
           onClick={handlePrint}
