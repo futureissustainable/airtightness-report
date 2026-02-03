@@ -102,11 +102,28 @@ export default function BuildingConditions() {
       <div className="border border-[var(--color-border)] overflow-hidden">
         <div className="flex items-center justify-between px-4 py-3 bg-[var(--color-surface)] border-b border-[var(--color-border)]">
           <h4>Internal Volume Calculation</h4>
-          <div className="text-right">
-            <span className="text-sm text-[var(--color-muted)] mr-2">Total:</span>
-            <span className="font-mono font-medium text-[var(--color-title)]">
-              {totalVolume.toFixed(2)} m³
-            </span>
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-1">
+              <button
+                onClick={removeVolumeRow}
+                disabled={volumeRows.length <= 1}
+                className="p-1.5 text-[var(--color-muted)] hover:text-[var(--color-error)] disabled:opacity-40 transition-colors"
+              >
+                <Minus weight="bold" className="w-4 h-4" />
+              </button>
+              <button
+                onClick={addVolumeRow}
+                className="p-1.5 text-[var(--color-muted)] hover:text-[var(--color-title)] transition-colors"
+              >
+                <Plus weight="bold" className="w-4 h-4" />
+              </button>
+            </div>
+            <div className="text-right">
+              <span className="text-sm text-[var(--color-muted)] mr-2">Total:</span>
+              <span className="font-mono font-medium text-[var(--color-title)]">
+                {totalVolume.toFixed(2)} m³
+              </span>
+            </div>
           </div>
         </div>
 
@@ -114,13 +131,13 @@ export default function BuildingConditions() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-[var(--color-border)]">
-                <th className="text-left py-2 px-3 font-medium text-[var(--color-paragraph)]">Space/Room</th>
+                <th className="text-left py-2 px-3 font-medium text-[var(--color-paragraph)]">Space</th>
                 <th className="text-left py-2 px-3 font-medium text-[var(--color-paragraph)] w-24">Method</th>
-                <th className="text-left py-2 px-3 font-medium text-[var(--color-paragraph)] w-16">L (m)</th>
-                <th className="text-left py-2 px-3 font-medium text-[var(--color-paragraph)] w-16">W (m)</th>
-                <th className="text-left py-2 px-3 font-medium text-[var(--color-paragraph)] w-20">Area (m²)</th>
-                <th className="text-left py-2 px-3 font-medium text-[var(--color-paragraph)] w-16">H (m)</th>
-                <th className="text-right py-2 px-3 font-medium text-[var(--color-paragraph)] w-20">Volume</th>
+                <th className="text-left py-2 px-3 font-medium text-[var(--color-paragraph)] w-24">L (m)</th>
+                <th className="text-left py-2 px-3 font-medium text-[var(--color-paragraph)] w-24">W (m)</th>
+                <th className="text-left py-2 px-3 font-medium text-[var(--color-paragraph)] w-24">Area (m²)</th>
+                <th className="text-left py-2 px-3 font-medium text-[var(--color-paragraph)] w-24">H (m)</th>
+                <th className="text-right py-2 px-3 font-medium text-[var(--color-paragraph)] w-24">Volume</th>
               </tr>
             </thead>
             <tbody>
@@ -214,21 +231,6 @@ export default function BuildingConditions() {
           </table>
         </div>
 
-        <div className="flex items-center justify-end gap-1 px-4 py-2 bg-[var(--color-surface)] border-t border-[var(--color-border)]">
-          <button
-            onClick={removeVolumeRow}
-            disabled={volumeRows.length <= 1}
-            className="p-1.5 text-[var(--color-muted)] hover:text-[var(--color-error)] disabled:opacity-40 transition-colors"
-          >
-            <Minus weight="bold" className="w-4 h-4" />
-          </button>
-          <button
-            onClick={addVolumeRow}
-            className="p-1.5 text-[var(--color-muted)] hover:text-[var(--color-title)] transition-colors"
-          >
-            <Plus weight="bold" className="w-4 h-4" />
-          </button>
-        </div>
       </div>
     </Section>
   );
