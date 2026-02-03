@@ -28,7 +28,7 @@ export default function SavedReports({ isOpen, onClose }: SavedReportsProps) {
   const [showImport, setShowImport] = useState(false);
   const [importCode, setImportCode] = useState('');
   const [importError, setImportError] = useState(false);
-  const [exportMessage, setExportMessage] = useState<string | null>(null);
+  const [exportedReportId, setExportedReportId] = useState<string | null>(null);
   const newMenuRef = useRef<HTMLDivElement>(null);
 
   // Close menu when clicking outside
@@ -65,15 +65,21 @@ export default function SavedReports({ isOpen, onClose }: SavedReportsProps) {
     }
   };
 
-  const handleExport = async () => {
+  const handleExport = async (reportId: string) => {
     try {
-      const code = exportLegacyCode();
-      await navigator.clipboard.writeText(code);
-      setExportMessage('Copied!');
-      setTimeout(() => setExportMessage(null), 2000);
+      // Load the report first if not current
+      if (currentReportId !== reportId) {
+        loadReport(reportId);
+      }
+      // Small delay to ensure state is updated
+      setTimeout(async () => {
+        const code = exportLegacyCode();
+        await navigator.clipboard.writeText(code);
+        setExportedReportId(reportId);
+        setTimeout(() => setExportedReportId(null), 2000);
+      }, 50);
     } catch {
-      setExportMessage('Failed');
-      setTimeout(() => setExportMessage(null), 2000);
+      // Failed silently
     }
   };
 
@@ -126,18 +132,12 @@ export default function SavedReports({ isOpen, onClose }: SavedReportsProps) {
                     onClick={() => { setShowImport(true); setShowNewMenu(false); }}
                     className="w-full px-3 py-2 text-left text-sm hover:bg-[var(--color-surface)] border-t border-[var(--color-border)]"
                   >
-                    Import Legacy
+                    Import Code
                   </button>
                 </div>
               )}
             </div>
-            <Button variant="secondary" onClick={handleExport} title="Export as legacy code">
-              <Export weight="bold" className="w-4 h-4" />
-            </Button>
           </div>
-          {exportMessage && (
-            <p className="text-xs text-center text-[var(--color-muted)] mt-2">{exportMessage}</p>
-          )}
         </div>
 
         {showImport && (
@@ -195,7 +195,9 @@ export default function SavedReports({ isOpen, onClose }: SavedReportsProps) {
                           {formatDate(report.updatedAt)}
                         </p>
                       </div>
-                      {deleteConfirmId === report.id ? (
+                      {exportedReportId === report.id ? (
+                        <span className="text-xs text-[var(--color-muted)]">Copied Code</span>
+                      ) : deleteConfirmId === report.id ? (
                         <div className="flex items-center gap-1">
                           <button
                             onClick={() => handleDelete(report.id)}
@@ -211,15 +213,28 @@ export default function SavedReports({ isOpen, onClose }: SavedReportsProps) {
                           </button>
                         </div>
                       ) : (
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setDeleteConfirmId(report.id);
-                          }}
-                          className="p-1 text-[var(--color-muted)] hover:text-[var(--color-error)]"
-                        >
-                          <Trash weight="bold" className="w-4 h-4" />
-                        </button>
+                        <div className="flex items-center gap-1">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleExport(report.id);
+                            }}
+                            className="p-1 text-[var(--color-muted)] hover:text-[var(--color-title)]"
+                            title="Export code"
+                          >
+                            <Export weight="bold" className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setDeleteConfirmId(report.id);
+                            }}
+                            className="p-1 text-[var(--color-muted)] hover:text-[var(--color-error)]"
+                            title="Delete"
+                          >
+                            <Trash weight="bold" className="w-4 h-4" />
+                          </button>
+                        </div>
                       )}
                     </div>
                   </div>
