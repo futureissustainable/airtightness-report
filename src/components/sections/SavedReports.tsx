@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useReportStore } from '@/store/reportStore';
 import { Button, Textarea } from '@/components/ui';
-import { FloppyDisk, Plus, X, Trash, Upload, Export, CaretDown } from '@phosphor-icons/react';
+import { FloppyDisk, Plus, X, Trash, Upload, Export } from '@phosphor-icons/react';
 
 interface SavedReportsProps {
   isOpen: boolean;
@@ -113,7 +113,6 @@ export default function SavedReports({ isOpen, onClose }: SavedReportsProps) {
               <Button variant="secondary" onClick={() => setShowNewMenu(!showNewMenu)}>
                 <Plus weight="bold" className="w-4 h-4 mr-1.5" />
                 New
-                <CaretDown weight="bold" className="w-3 h-3 ml-1" />
               </Button>
               {showNewMenu && (
                 <div className="absolute right-0 top-full mt-1 w-36 bg-white border border-[var(--color-border)] shadow-lg z-10">
