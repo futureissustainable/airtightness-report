@@ -124,6 +124,7 @@ interface ReportState {
   deleteReport: (id: string) => void;
   createNewReport: () => void;
   importLegacyReport: (code: string) => boolean;
+  exportLegacyCode: () => string;
 
   // Computed Values
   getCalculatedResults: () => CalculatedResults;
@@ -504,6 +505,53 @@ export const useReportStore = create<ReportState>()(
         } catch {
           return false;
         }
+      },
+
+      exportLegacyCode: (): string => {
+        const state = get();
+
+        const data = {
+          staticInputs: {
+            'project-name': state.generalInfo.projectName,
+            'report-number': state.generalInfo.reportNumber,
+            'project-address': state.generalInfo.projectAddress,
+            'technician-name': state.generalInfo.technicianName,
+            'test-date': state.generalInfo.testDate,
+            'software-version': state.generalInfo.softwareVersion,
+            'envelope-area': String(state.buildingConditions.envelopeArea),
+            'floor-area': String(state.buildingConditions.floorArea),
+            'internal-temp': String(state.buildingConditions.internalTemp),
+            'external-temp': String(state.buildingConditions.externalTemp),
+            'required-n50': String(state.results.requiredN50),
+            'dep-n50': String(state.results.depN50),
+            'pre-n50': String(state.results.preN50),
+          },
+          volumeRows: state.volumeRows.map((row) => ({
+            name: row.name,
+            method: row.method,
+            l: String(row.length),
+            w: String(row.width),
+            a: String(row.area),
+            h: String(row.height),
+          })),
+          sealItems: state.sealItems.map((item) => ({
+            desc: item.description,
+            img: item.imageData || '',
+          })),
+          leakageItems: state.leakageItems.map((item) => ({
+            desc: item.description,
+            sol: item.solution,
+            img: item.imageData || '',
+          })),
+          measurementRows: state.measurementRows.map((row) => ({
+            dep_p: String(row.depPressure),
+            dep_ach: String(row.depAch),
+            pre_p: String(row.prePressure),
+            pre_ach: String(row.preAch),
+          })),
+        };
+
+        return btoa(JSON.stringify(data));
       },
 
       // Computed Values

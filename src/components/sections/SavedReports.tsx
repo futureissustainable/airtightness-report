@@ -1,9 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useReportStore } from '@/store/reportStore';
 import { Button, Textarea } from '@/components/ui';
-import { FloppyDisk, Plus, X, Trash, Upload } from '@phosphor-icons/react';
+import { FloppyDisk, Plus, X, Trash, Upload, Export, CaretDown } from '@phosphor-icons/react';
 
 interface SavedReportsProps {
   isOpen: boolean;
@@ -20,12 +20,27 @@ export default function SavedReports({ isOpen, onClose }: SavedReportsProps) {
     deleteReport,
     createNewReport,
     importLegacyReport,
+    exportLegacyCode,
   } = useReportStore();
 
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+  const [showNewMenu, setShowNewMenu] = useState(false);
   const [showImport, setShowImport] = useState(false);
   const [importCode, setImportCode] = useState('');
   const [importError, setImportError] = useState(false);
+  const [exportMessage, setExportMessage] = useState<string | null>(null);
+  const newMenuRef = useRef<HTMLDivElement>(null);
+
+  // Close menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (newMenuRef.current && !newMenuRef.current.contains(e.target as Node)) {
+        setShowNewMenu(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const handleSave = () => {
     saveReport(generalInfo.projectName || 'Untitled Report');
@@ -47,6 +62,18 @@ export default function SavedReports({ isOpen, onClose }: SavedReportsProps) {
       onClose();
     } else {
       setImportError(true);
+    }
+  };
+
+  const handleExport = async () => {
+    try {
+      const code = exportLegacyCode();
+      await navigator.clipboard.writeText(code);
+      setExportMessage('Copied!');
+      setTimeout(() => setExportMessage(null), 2000);
+    } catch {
+      setExportMessage('Failed');
+      setTimeout(() => setExportMessage(null), 2000);
     }
   };
 
@@ -77,23 +104,43 @@ export default function SavedReports({ isOpen, onClose }: SavedReportsProps) {
         </div>
 
         <div className="p-4 border-b border-[var(--color-border)] bg-[var(--color-surface)]">
-          <div className="flex gap-2 mb-3">
+          <div className="flex gap-2">
             <Button variant="primary" className="flex-1" onClick={handleSave}>
               <FloppyDisk weight="bold" className="w-4 h-4 mr-1.5" />
               {currentReportId ? 'Update' : 'Save'}
             </Button>
-            <Button variant="secondary" onClick={createNewReport}>
-              <Plus weight="bold" className="w-4 h-4 mr-1.5" />
-              New
+            <div className="relative" ref={newMenuRef}>
+              <Button variant="secondary" onClick={() => setShowNewMenu(!showNewMenu)}>
+                <Plus weight="bold" className="w-4 h-4 mr-1.5" />
+                New
+                <CaretDown weight="bold" className="w-3 h-3 ml-1" />
+              </Button>
+              {showNewMenu && (
+                <div className="absolute right-0 top-full mt-1 w-40 bg-white border border-[var(--color-border)] shadow-lg z-10">
+                  <button
+                    onClick={() => { createNewReport(); setShowNewMenu(false); }}
+                    className="w-full px-3 py-2 text-left text-sm hover:bg-[var(--color-surface)] flex items-center gap-2"
+                  >
+                    <Plus weight="bold" className="w-4 h-4" />
+                    New Report
+                  </button>
+                  <button
+                    onClick={() => { setShowImport(true); setShowNewMenu(false); }}
+                    className="w-full px-3 py-2 text-left text-sm hover:bg-[var(--color-surface)] flex items-center gap-2 border-t border-[var(--color-border)]"
+                  >
+                    <Upload weight="bold" className="w-4 h-4" />
+                    Import Legacy
+                  </button>
+                </div>
+              )}
+            </div>
+            <Button variant="secondary" onClick={handleExport} title="Export as legacy code">
+              <Export weight="bold" className="w-4 h-4" />
             </Button>
           </div>
-          <button
-            onClick={() => setShowImport(!showImport)}
-            className="w-full text-sm text-[var(--color-muted)] hover:text-[var(--color-title)] flex items-center justify-center gap-1.5 py-1"
-          >
-            <Upload weight="bold" className="w-3.5 h-3.5" />
-            Import Legacy Code
-          </button>
+          {exportMessage && (
+            <p className="text-xs text-center text-[var(--color-muted)] mt-2">{exportMessage}</p>
+          )}
         </div>
 
         {showImport && (
