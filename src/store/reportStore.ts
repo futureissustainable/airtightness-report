@@ -125,6 +125,7 @@ interface ReportState {
   createNewReport: () => void;
   importLegacyReport: (code: string) => boolean;
   exportLegacyCode: () => string;
+  cleanupEmptyRows: () => number;
 
   // Computed Values
   getCalculatedResults: () => CalculatedResults;
@@ -552,6 +553,49 @@ export const useReportStore = create<ReportState>()(
         };
 
         return btoa(JSON.stringify(data));
+      },
+
+      cleanupEmptyRows: (): number => {
+        const state = get();
+        let removedCount = 0;
+
+        // Filter empty volume rows (keep at least 1)
+        const cleanVolumeRows = state.volumeRows.filter(
+          (row) => row.name || row.subVolume > 0
+        );
+        if (cleanVolumeRows.length === 0) cleanVolumeRows.push(createDefaultVolumeRow());
+        removedCount += state.volumeRows.length - cleanVolumeRows.length;
+
+        // Filter empty seal items (keep at least 0)
+        const cleanSealItems = state.sealItems.filter(
+          (item) => item.description || item.imageData
+        );
+        removedCount += state.sealItems.length - cleanSealItems.length;
+
+        // Filter empty leakage items (keep at least 0)
+        const cleanLeakageItems = state.leakageItems.filter(
+          (item) => item.description || item.solution || item.imageData
+        );
+        removedCount += state.leakageItems.length - cleanLeakageItems.length;
+
+        // Filter empty measurement rows (keep at least 1)
+        const cleanMeasurementRows = state.measurementRows.filter(
+          (row) => row.depPressure > 0 || row.depAch > 0 || row.prePressure > 0 || row.preAch > 0
+        );
+        if (cleanMeasurementRows.length === 0) cleanMeasurementRows.push(createDefaultMeasurementRow());
+        removedCount += state.measurementRows.length - cleanMeasurementRows.length;
+
+        if (removedCount > 0) {
+          set({
+            volumeRows: cleanVolumeRows,
+            sealItems: cleanSealItems.length > 0 ? cleanSealItems : [createDefaultSealItem()],
+            leakageItems: cleanLeakageItems.length > 0 ? cleanLeakageItems : [createDefaultLeakageItem()],
+            measurementRows: cleanMeasurementRows,
+            hasUnsavedChanges: true,
+          });
+        }
+
+        return removedCount;
       },
 
       // Computed Values
