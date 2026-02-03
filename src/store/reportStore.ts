@@ -20,7 +20,7 @@ const generateId = () => `${Date.now()}-${Math.random().toString(36).substr(2, 9
 const createDefaultVolumeRow = (): VolumeRow => ({
   id: generateId(),
   name: '',
-  method: 'l_w',
+  method: 'area',
   length: 0,
   width: 0,
   area: 0,
@@ -99,6 +99,7 @@ interface ReportState {
   removeVolumeRow: () => void;
   updateVolumeRow: (id: string, data: Partial<VolumeRow>) => void;
   pasteVolumeRows: (text: string) => number;
+  pasteColumnData: (field: 'name' | 'length' | 'width' | 'area' | 'height', startIndex: number, values: string[]) => number;
 
   // Actions - Seal Items
   addSealItem: () => void;
@@ -258,6 +259,56 @@ export const useReportStore = create<ReportState>()(
         });
 
         return newRows.length;
+      },
+
+      pasteColumnData: (field, startIndex, values): number => {
+        // Safety: limit to 500 rows max to prevent accidents
+        const safeValues = values.slice(0, 500);
+        if (safeValues.length === 0) return 0;
+
+        set((state) => {
+          // Clone existing rows
+          const newVolumeRows = [...state.volumeRows];
+
+          // Calculate how many new rows we need
+          const totalNeeded = startIndex + safeValues.length;
+          const rowsToAdd = Math.max(0, totalNeeded - newVolumeRows.length);
+
+          // Add new rows if needed (all at once, not in a loop with state updates)
+          for (let i = 0; i < rowsToAdd; i++) {
+            newVolumeRows.push(createDefaultVolumeRow());
+          }
+
+          // Now update the values
+          safeValues.forEach((value, i) => {
+            const targetIndex = startIndex + i;
+            const row = newVolumeRows[targetIndex];
+
+            if (field === 'name') {
+              row.name = value;
+            } else {
+              const num = parseFloat(value) || 0;
+              if (field === 'length') row.length = num;
+              else if (field === 'width') row.width = num;
+              else if (field === 'area') row.area = num;
+              else if (field === 'height') row.height = num;
+
+              // Recalculate subVolume
+              if (row.method === 'l_w') {
+                row.subVolume = row.length * row.width * row.height;
+              } else {
+                row.subVolume = row.area * row.height;
+              }
+            }
+          });
+
+          return {
+            volumeRows: newVolumeRows,
+            hasUnsavedChanges: true,
+          };
+        });
+
+        return safeValues.length;
       },
 
       // Actions - Seal Items

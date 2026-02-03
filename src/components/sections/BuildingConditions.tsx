@@ -2,6 +2,7 @@
 
 import { useReportStore } from '@/store/reportStore';
 import { Section, Input, Select } from '@/components/ui';
+import { Plus, Minus } from '@phosphor-icons/react';
 import React from 'react';
 
 export default function BuildingConditions() {
@@ -13,6 +14,7 @@ export default function BuildingConditions() {
     removeVolumeRow,
     updateVolumeRow,
     pasteVolumeRows,
+    pasteColumnData,
     getCalculatedResults,
   } = useReportStore();
 
@@ -23,7 +25,7 @@ export default function BuildingConditions() {
     { value: 'area', label: 'Area' },
   ];
 
-  // Handle paste in any input - if multi-line, fill down the column
+  // Handle paste in any input - if multi-line, fill down the column (creates rows if needed)
   const handlePaste = (
     e: React.ClipboardEvent<HTMLInputElement>,
     rowIndex: number,
@@ -43,23 +45,11 @@ export default function BuildingConditions() {
         if (count > 0) return;
       }
 
-      // Otherwise, fill down the single column (only existing rows)
-      lines.forEach((line, i) => {
-        const targetIndex = rowIndex + i;
+      // Extract values (take first cell if tabs present)
+      const values = lines.map((line) => line.split('\t')[0].trim());
 
-        // Only update existing rows, ignore overflow
-        if (targetIndex >= volumeRows.length) return;
-
-        const value = line.split('\t')[0].trim();
-        const row = volumeRows[targetIndex];
-
-        if (field === 'name') {
-          updateVolumeRow(row.id, { name: value });
-        } else {
-          const num = parseFloat(value) || 0;
-          updateVolumeRow(row.id, { [field]: num });
-        }
-      });
+      // Use batch update function - safe, creates rows as needed, max 500
+      pasteColumnData(field, rowIndex, values);
     }
   };
 
@@ -125,12 +115,12 @@ export default function BuildingConditions() {
             <thead>
               <tr className="border-b border-[var(--color-border)]">
                 <th className="text-left py-2 px-3 font-medium text-[var(--color-paragraph)]">Space/Room</th>
-                <th className="text-left py-2 px-3 font-medium text-[var(--color-paragraph)]">Method</th>
-                <th className="text-left py-2 px-3 font-medium text-[var(--color-paragraph)]">L (m)</th>
-                <th className="text-left py-2 px-3 font-medium text-[var(--color-paragraph)]">W (m)</th>
-                <th className="text-left py-2 px-3 font-medium text-[var(--color-paragraph)]">Area (m²)</th>
-                <th className="text-left py-2 px-3 font-medium text-[var(--color-paragraph)]">H (m)</th>
-                <th className="text-right py-2 px-3 font-medium text-[var(--color-paragraph)]">Volume</th>
+                <th className="text-left py-2 px-3 font-medium text-[var(--color-paragraph)] w-24">Method</th>
+                <th className="text-left py-2 px-3 font-medium text-[var(--color-paragraph)] w-16">L (m)</th>
+                <th className="text-left py-2 px-3 font-medium text-[var(--color-paragraph)] w-16">W (m)</th>
+                <th className="text-left py-2 px-3 font-medium text-[var(--color-paragraph)] w-20">Area (m²)</th>
+                <th className="text-left py-2 px-3 font-medium text-[var(--color-paragraph)] w-16">H (m)</th>
+                <th className="text-right py-2 px-3 font-medium text-[var(--color-paragraph)] w-20">Volume</th>
               </tr>
             </thead>
             <tbody>
@@ -224,19 +214,19 @@ export default function BuildingConditions() {
           </table>
         </div>
 
-        <div className="flex items-center justify-end gap-2 px-4 py-2 bg-[var(--color-surface)] border-t border-[var(--color-border)]">
+        <div className="flex items-center justify-end gap-1 px-4 py-2 bg-[var(--color-surface)] border-t border-[var(--color-border)]">
           <button
             onClick={removeVolumeRow}
             disabled={volumeRows.length <= 1}
-            className="px-3 py-1 text-sm text-[var(--color-muted)] hover:text-[var(--color-error)] disabled:opacity-40 transition-colors"
+            className="p-1.5 text-[var(--color-muted)] hover:text-[var(--color-error)] disabled:opacity-40 transition-colors"
           >
-            Remove
+            <Minus weight="bold" className="w-4 h-4" />
           </button>
           <button
             onClick={addVolumeRow}
-            className="px-3 py-1 text-sm text-[var(--color-title)] hover:text-[var(--color-muted)] transition-colors"
+            className="p-1.5 text-[var(--color-muted)] hover:text-[var(--color-title)] transition-colors"
           >
-            Add Row
+            <Plus weight="bold" className="w-4 h-4" />
           </button>
         </div>
       </div>
