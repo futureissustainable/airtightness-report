@@ -114,11 +114,11 @@ export default function BuildingConditions() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-[var(--color-border)]">
-                <th className="text-left py-2 px-3 font-medium text-[var(--color-paragraph)]">Space/Room</th>
-                <th className="text-left py-2 px-3 font-medium text-[var(--color-paragraph)] w-24">Method</th>
+                <th className="text-left py-2 px-3 font-medium text-[var(--color-paragraph)] w-40">Space/Room</th>
+                <th className="text-left py-2 px-3 font-medium text-[var(--color-paragraph)] w-20">Method</th>
                 <th className="text-left py-2 px-3 font-medium text-[var(--color-paragraph)] w-16">L (m)</th>
                 <th className="text-left py-2 px-3 font-medium text-[var(--color-paragraph)] w-16">W (m)</th>
-                <th className="text-left py-2 px-3 font-medium text-[var(--color-paragraph)] w-20">Area (m²)</th>
+                <th className="text-left py-2 px-3 font-medium text-[var(--color-paragraph)] w-16">Area (m²)</th>
                 <th className="text-left py-2 px-3 font-medium text-[var(--color-paragraph)] w-16">H (m)</th>
                 <th className="text-right py-2 px-3 font-medium text-[var(--color-paragraph)] w-20">Volume</th>
               </tr>
