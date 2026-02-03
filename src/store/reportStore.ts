@@ -121,6 +121,7 @@ interface ReportState {
   loadReport: (id: string) => void;
   deleteReport: (id: string) => void;
   createNewReport: () => void;
+  importLegacyReport: (code: string) => boolean;
 
   // Computed Values
   getCalculatedResults: () => CalculatedResults;
@@ -311,6 +312,109 @@ export const useReportStore = create<ReportState>()(
           measurementRows: Array.from({ length: 5 }, () => createDefaultMeasurementRow()),
           results: getDefaultResults(),
         }),
+
+      importLegacyReport: (code: string): boolean => {
+        try {
+          const decoded = atob(code.trim());
+          const data = JSON.parse(decoded);
+          const inputs = data.staticInputs || {};
+
+          // Map general info
+          const generalInfo: GeneralInfo = {
+            projectName: inputs['project-name'] || '',
+            reportNumber: inputs['report-number'] || '',
+            projectAddress: inputs['project-address'] || '',
+            technicianName: inputs['technician-name'] || '',
+            testDate: inputs['test-date'] || new Date().toISOString().split('T')[0],
+            softwareVersion: inputs['software-version'] || '',
+          };
+
+          // Map building conditions
+          const buildingConditions: BuildingConditions = {
+            envelopeArea: parseFloat(inputs['envelope-area']) || 0,
+            floorArea: parseFloat(inputs['floor-area']) || 0,
+            internalTemp: parseFloat(inputs['internal-temp']) || 0,
+            externalTemp: parseFloat(inputs['external-temp']) || 0,
+          };
+
+          // Map volume rows
+          const volumeRows: VolumeRow[] = (data.volumeRows || []).map((row: { name?: string; method?: string; l?: string; w?: string; a?: string; h?: string }) => {
+            const length = parseFloat(row.l || '0') || 0;
+            const width = parseFloat(row.w || '0') || 0;
+            const area = parseFloat(row.a || '0') || 0;
+            const height = parseFloat(row.h || '0') || 0;
+            const method = row.method === 'area' ? 'area' : 'l_w';
+            const subVolume = method === 'area' ? area * height : length * width * height;
+
+            return {
+              id: generateId(),
+              name: row.name || '',
+              method: method as 'l_w' | 'area',
+              length,
+              width,
+              area,
+              height,
+              subVolume,
+            };
+          });
+
+          // Map seal items
+          const sealItems: SealItem[] = (data.sealItems || []).map((item: { desc?: string; img?: string }) => ({
+            id: generateId(),
+            description: item.desc || '',
+            imageData: item.img && item.img.startsWith('data:') ? item.img : null,
+          }));
+
+          // Map leakage items
+          const leakageItems: LeakageItem[] = (data.leakageItems || []).map((item: { desc?: string; sol?: string; img?: string }) => ({
+            id: generateId(),
+            description: item.desc || '',
+            solution: item.sol || '',
+            imageData: item.img && item.img.startsWith('data:') ? item.img : null,
+          }));
+
+          // Map measurement rows
+          const measurementRows: MeasurementRow[] = (data.measurementRows || []).map((row: { dep_p?: string; dep_ach?: string; pre_p?: string; pre_ach?: string }) => ({
+            id: generateId(),
+            depPressure: parseFloat(row.dep_p || '0') || 0,
+            depAch: parseFloat(row.dep_ach || '0') || 0,
+            depFlow: 0,
+            prePressure: parseFloat(row.pre_p || '0') || 0,
+            preAch: parseFloat(row.pre_ach || '0') || 0,
+            preFlow: 0,
+          }));
+
+          // Map results
+          const results: Results = {
+            requiredN50: parseFloat(inputs['required-n50']) || 0.6,
+            depN50: parseFloat(inputs['dep-n50']) || 0,
+            preN50: parseFloat(inputs['pre-n50']) || 0,
+          };
+
+          // Ensure we have at least one row for each section
+          if (volumeRows.length === 0) volumeRows.push(createDefaultVolumeRow());
+          if (sealItems.length === 0) sealItems.push(createDefaultSealItem());
+          if (leakageItems.length === 0) leakageItems.push(createDefaultLeakageItem());
+          if (measurementRows.length === 0) {
+            for (let i = 0; i < 5; i++) measurementRows.push(createDefaultMeasurementRow());
+          }
+
+          set({
+            currentReportId: null,
+            generalInfo,
+            buildingConditions,
+            volumeRows,
+            sealItems,
+            leakageItems,
+            measurementRows,
+            results,
+          });
+
+          return true;
+        } catch {
+          return false;
+        }
+      },
 
       // Computed Values
       getCalculatedResults: () => {

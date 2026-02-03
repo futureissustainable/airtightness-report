@@ -2,8 +2,8 @@
 
 import { useState } from 'react';
 import { useReportStore } from '@/store/reportStore';
-import { Button } from '@/components/ui';
-import { FloppyDisk, Plus, X, Trash } from '@phosphor-icons/react';
+import { Button, Textarea } from '@/components/ui';
+import { FloppyDisk, Plus, X, Trash, Upload } from '@phosphor-icons/react';
 
 interface SavedReportsProps {
   isOpen: boolean;
@@ -19,9 +19,13 @@ export default function SavedReports({ isOpen, onClose }: SavedReportsProps) {
     loadReport,
     deleteReport,
     createNewReport,
+    importLegacyReport,
   } = useReportStore();
 
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+  const [showImport, setShowImport] = useState(false);
+  const [importCode, setImportCode] = useState('');
+  const [importError, setImportError] = useState(false);
 
   const handleSave = () => {
     saveReport(generalInfo.projectName || 'Untitled Report');
@@ -30,6 +34,20 @@ export default function SavedReports({ isOpen, onClose }: SavedReportsProps) {
   const handleDelete = (id: string) => {
     deleteReport(id);
     setDeleteConfirmId(null);
+  };
+
+  const handleImport = () => {
+    if (!importCode.trim()) return;
+
+    const success = importLegacyReport(importCode);
+    if (success) {
+      setImportCode('');
+      setShowImport(false);
+      setImportError(false);
+      onClose();
+    } else {
+      setImportError(true);
+    }
   };
 
   const formatDate = (dateString: string) => {
@@ -52,14 +70,14 @@ export default function SavedReports({ isOpen, onClose }: SavedReportsProps) {
 
       <div className="fixed right-0 top-0 h-full w-full max-w-sm bg-white shadow-xl z-50 flex flex-col">
         <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--color-border)]">
-          <h4>Saved Reports</h4>
+          <h4>Reports</h4>
           <button onClick={onClose} className="p-1 text-[var(--color-muted)] hover:text-[var(--color-title)]">
             <X weight="bold" className="w-4 h-4" />
           </button>
         </div>
 
         <div className="p-4 border-b border-[var(--color-border)] bg-[var(--color-surface)]">
-          <div className="flex gap-2">
+          <div className="flex gap-2 mb-3">
             <Button variant="primary" className="flex-1" onClick={handleSave}>
               <FloppyDisk weight="bold" className="w-4 h-4 mr-1.5" />
               {currentReportId ? 'Update' : 'Save'}
@@ -69,7 +87,42 @@ export default function SavedReports({ isOpen, onClose }: SavedReportsProps) {
               New
             </Button>
           </div>
+          <button
+            onClick={() => setShowImport(!showImport)}
+            className="w-full text-sm text-[var(--color-muted)] hover:text-[var(--color-title)] flex items-center justify-center gap-1.5 py-1"
+          >
+            <Upload weight="bold" className="w-3.5 h-3.5" />
+            Import Legacy Code
+          </button>
         </div>
+
+        {showImport && (
+          <div className="p-4 border-b border-[var(--color-border)] bg-[var(--color-background)]">
+            <Textarea
+              placeholder="Paste legacy report code here..."
+              value={importCode}
+              onChange={(e) => {
+                setImportCode(e.target.value);
+                setImportError(false);
+              }}
+              rows={3}
+              className="text-xs font-mono"
+            />
+            {importError && (
+              <p className="text-xs text-[var(--color-error)] mt-2">
+                Invalid code format. Please check and try again.
+              </p>
+            )}
+            <div className="flex gap-2 mt-3">
+              <Button variant="primary" className="flex-1" onClick={handleImport} disabled={!importCode.trim()}>
+                Import
+              </Button>
+              <Button variant="secondary" onClick={() => { setShowImport(false); setImportCode(''); setImportError(false); }}>
+                Cancel
+              </Button>
+            </div>
+          </div>
+        )}
 
         <div className="flex-1 overflow-y-auto p-4">
           {savedReports.length === 0 ? (
