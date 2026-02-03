@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useReportStore } from '@/store/reportStore';
 import { Button, Textarea } from '@/components/ui';
-import { FloppyDisk, Plus, X, Trash, Upload, Export } from '@phosphor-icons/react';
+import { FloppyDisk, Plus, X, Trash, Export } from '@phosphor-icons/react';
 
 interface SavedReportsProps {
   isOpen: boolean;
