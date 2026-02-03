@@ -66,16 +66,16 @@ export default function Home() {
       </div>
 
       {/* Main Content */}
-      <main className="content-padding py-10 print:p-4">
-        <div className="max-w-5xl mx-auto">
+      <main className="content-padding py-10 print:p-0">
+        <div className="max-w-5xl mx-auto print:max-w-none">
           {/* Title Strip */}
-          <div className="bg-[var(--color-dark-bg)] p-8 mb-6 text-center">
-            <h1 className="text-[var(--color-dark-title)] mb-2">Airtightness Report</h1>
-            <p className="text-[var(--color-dark-paragraph)]">ISO 9972:2015 & Passive House Requirements</p>
+          <div style={{ backgroundColor: '#0a0b0d', padding: '2rem', marginBottom: '1.5rem', textAlign: 'center' }}>
+            <h1 style={{ color: '#e6e8ea', marginBottom: '0.5rem' }}>Airtightness Report</h1>
+            <p style={{ color: '#77787a' }}>ISO 9972:2015 & Passive House Requirements</p>
           </div>
 
           {/* Report Sections */}
-          <div className="space-y-6 print:space-y-4">
+          <div className="space-y-6 print:space-y-3">
             <Card>
               <GeneralInformation />
             </Card>
@@ -112,18 +112,27 @@ export default function Home() {
 
       {/* Print Styles */}
       <style jsx global>{`
+        @page {
+          size: A4;
+          margin: 10mm;
+        }
         @media print {
-          body {
+          html, body {
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
+            font-size: 10pt;
           }
           .fixed { display: none !important; }
-          .content-padding { padding: 1rem !important; }
+          .content-padding { padding: 0 !important; }
           .collapse-content.collapsed {
             grid-template-rows: 1fr !important;
             opacity: 1 !important;
           }
-          .space-y-6 > * + * { margin-top: 1rem !important; }
+          .space-y-6 > * + * { margin-top: 0.75rem !important; }
+          h1 { font-size: 24pt !important; }
+          h3 { font-size: 12pt !important; }
+          h4 { font-size: 11pt !important; }
+          p, td, th, input, select, textarea, label, span { font-size: 9pt !important; }
         }
       `}</style>
     </>
