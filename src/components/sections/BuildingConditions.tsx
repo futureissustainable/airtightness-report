@@ -2,7 +2,6 @@
 
 import { useReportStore } from '@/store/reportStore';
 import { Section, Input, Select } from '@/components/ui';
-import { Plus, Minus } from '@phosphor-icons/react';
 import React from 'react';
 
 export default function BuildingConditions() {
@@ -54,7 +53,12 @@ export default function BuildingConditions() {
   };
 
   return (
-    <Section title="Conditions" sectionNumber={2}>
+    <Section
+      title="Conditions"
+      sectionNumber={2}
+      onAdd={addVolumeRow}
+      onRemove={volumeRows.length > 1 ? removeVolumeRow : undefined}
+    >
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <Input
           label="Envelope Area (Aₑ)"
@@ -98,139 +102,119 @@ export default function BuildingConditions() {
         />
       </div>
 
-      {/* Volume Calculation */}
-      <div className="border border-[var(--color-border)] overflow-hidden">
-        <div className="flex items-center justify-between px-4 py-3 bg-[var(--color-surface)] border-b border-[var(--color-border)]">
-          <h4>Internal Volume Calculation</h4>
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-1">
-              <button
-                onClick={removeVolumeRow}
-                disabled={volumeRows.length <= 1}
-                className="p-1.5 text-[var(--color-muted)] hover:text-[var(--color-error)] disabled:opacity-40 transition-colors"
-              >
-                <Minus weight="bold" className="w-4 h-4" />
-              </button>
-              <button
-                onClick={addVolumeRow}
-                className="p-1.5 text-[var(--color-muted)] hover:text-[var(--color-title)] transition-colors"
-              >
-                <Plus weight="bold" className="w-4 h-4" />
-              </button>
-            </div>
-            <div className="text-right">
-              <span className="text-sm text-[var(--color-muted)] mr-2">Total:</span>
-              <span className="font-mono font-medium text-[var(--color-title)]">
-                {totalVolume.toFixed(2)} m³
-              </span>
-            </div>
-          </div>
-        </div>
-
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-[var(--color-border)]">
-                <th className="text-left py-2 px-3 font-medium text-[var(--color-paragraph)]">Space</th>
-                <th className="text-left py-2 px-3 font-medium text-[var(--color-paragraph)] w-24">Method</th>
-                <th className="text-left py-2 px-3 font-medium text-[var(--color-paragraph)] w-24">L (m)</th>
-                <th className="text-left py-2 px-3 font-medium text-[var(--color-paragraph)] w-24">W (m)</th>
-                <th className="text-left py-2 px-3 font-medium text-[var(--color-paragraph)] w-24">Area (m²)</th>
-                <th className="text-left py-2 px-3 font-medium text-[var(--color-paragraph)] w-24">H (m)</th>
-                <th className="text-right py-2 px-3 font-medium text-[var(--color-paragraph)] w-24">Volume</th>
-              </tr>
-            </thead>
-            <tbody>
-              {volumeRows.map((row, index) => (
-                <tr key={row.id} className="border-b border-[var(--color-border-light)]">
-                  <td className="py-1.5 px-2">
-                    <Input
-                      placeholder="Room name"
-                      value={row.name}
-                      onChange={(e) => updateVolumeRow(row.id, { name: e.target.value })}
-                      onPaste={(e) => handlePaste(e, index, 'name')}
-                      className="!py-1.5"
-                    />
-                  </td>
-                  <td className="py-1.5 px-2">
-                    <Select
-                      options={calcMethodOptions}
-                      value={row.method}
-                      onChange={(e) =>
-                        updateVolumeRow(row.id, { method: e.target.value as 'l_w' | 'area' })
-                      }
-                      className="!py-1.5"
-                    />
-                  </td>
-                  <td className="py-1.5 px-2">
-                    {row.method === 'l_w' ? (
-                      <Input
-                        type="number"
-                        step="0.01"
-                        value={row.length || ''}
-                        onChange={(e) =>
-                          updateVolumeRow(row.id, { length: parseFloat(e.target.value) || 0 })
-                        }
-                        onPaste={(e) => handlePaste(e, index, 'length')}
-                        className="!py-1.5"
-                      />
-                    ) : (
-                      <span className="text-[var(--color-muted)]">—</span>
-                    )}
-                  </td>
-                  <td className="py-1.5 px-2">
-                    {row.method === 'l_w' ? (
-                      <Input
-                        type="number"
-                        step="0.01"
-                        value={row.width || ''}
-                        onChange={(e) =>
-                          updateVolumeRow(row.id, { width: parseFloat(e.target.value) || 0 })
-                        }
-                        onPaste={(e) => handlePaste(e, index, 'width')}
-                        className="!py-1.5"
-                      />
-                    ) : (
-                      <span className="text-[var(--color-muted)]">—</span>
-                    )}
-                  </td>
-                  <td className="py-1.5 px-2">
-                    {row.method === 'area' ? (
-                      <Input
-                        type="number"
-                        step="0.01"
-                        value={row.area || ''}
-                        onChange={(e) =>
-                          updateVolumeRow(row.id, { area: parseFloat(e.target.value) || 0 })
-                        }
-                        onPaste={(e) => handlePaste(e, index, 'area')}
-                        className="!py-1.5"
-                      />
-                    ) : (
-                      <span className="text-[var(--color-muted)]">—</span>
-                    )}
-                  </td>
-                  <td className="py-1.5 px-2">
+      {/* Volume Calculation Table */}
+      <div className="overflow-x-auto">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="border-b border-[var(--color-border)]">
+              <th className="text-left py-2 px-3 font-medium text-[var(--color-paragraph)]">Space</th>
+              <th className="text-left py-2 px-3 font-medium text-[var(--color-paragraph)] w-24">Method</th>
+              <th className="text-left py-2 px-3 font-medium text-[var(--color-paragraph)] w-24">L (m)</th>
+              <th className="text-left py-2 px-3 font-medium text-[var(--color-paragraph)] w-24">W (m)</th>
+              <th className="text-left py-2 px-3 font-medium text-[var(--color-paragraph)] w-24">Area (m²)</th>
+              <th className="text-left py-2 px-3 font-medium text-[var(--color-paragraph)] w-24">H (m)</th>
+              <th className="text-right py-2 px-3 font-medium text-[var(--color-paragraph)] w-24">Volume</th>
+            </tr>
+          </thead>
+          <tbody>
+            {volumeRows.map((row, index) => (
+              <tr key={row.id} className="border-b border-[var(--color-border-light)]">
+                <td className="py-1.5 px-2">
+                  <Input
+                    placeholder="Room name"
+                    value={row.name}
+                    onChange={(e) => updateVolumeRow(row.id, { name: e.target.value })}
+                    onPaste={(e) => handlePaste(e, index, 'name')}
+                    className="!py-1.5"
+                  />
+                </td>
+                <td className="py-1.5 px-2">
+                  <Select
+                    options={calcMethodOptions}
+                    value={row.method}
+                    onChange={(e) =>
+                      updateVolumeRow(row.id, { method: e.target.value as 'l_w' | 'area' })
+                    }
+                    className="!py-1.5"
+                  />
+                </td>
+                <td className="py-1.5 px-2">
+                  {row.method === 'l_w' ? (
                     <Input
                       type="number"
                       step="0.01"
-                      value={row.height || ''}
+                      value={row.length || ''}
                       onChange={(e) =>
-                        updateVolumeRow(row.id, { height: parseFloat(e.target.value) || 0 })
+                        updateVolumeRow(row.id, { length: parseFloat(e.target.value) || 0 })
                       }
-                      onPaste={(e) => handlePaste(e, index, 'height')}
+                      onPaste={(e) => handlePaste(e, index, 'length')}
                       className="!py-1.5"
                     />
-                  </td>
-                  <td className="py-1.5 px-2 text-right font-mono text-[var(--color-title)]">
-                    {row.subVolume.toFixed(2)}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                  ) : (
+                    <span className="text-[var(--color-muted)]">—</span>
+                  )}
+                </td>
+                <td className="py-1.5 px-2">
+                  {row.method === 'l_w' ? (
+                    <Input
+                      type="number"
+                      step="0.01"
+                      value={row.width || ''}
+                      onChange={(e) =>
+                        updateVolumeRow(row.id, { width: parseFloat(e.target.value) || 0 })
+                      }
+                      onPaste={(e) => handlePaste(e, index, 'width')}
+                      className="!py-1.5"
+                    />
+                  ) : (
+                    <span className="text-[var(--color-muted)]">—</span>
+                  )}
+                </td>
+                <td className="py-1.5 px-2">
+                  {row.method === 'area' ? (
+                    <Input
+                      type="number"
+                      step="0.01"
+                      value={row.area || ''}
+                      onChange={(e) =>
+                        updateVolumeRow(row.id, { area: parseFloat(e.target.value) || 0 })
+                      }
+                      onPaste={(e) => handlePaste(e, index, 'area')}
+                      className="!py-1.5"
+                    />
+                  ) : (
+                    <span className="text-[var(--color-muted)]">—</span>
+                  )}
+                </td>
+                <td className="py-1.5 px-2">
+                  <Input
+                    type="number"
+                    step="0.01"
+                    value={row.height || ''}
+                    onChange={(e) =>
+                      updateVolumeRow(row.id, { height: parseFloat(e.target.value) || 0 })
+                    }
+                    onPaste={(e) => handlePaste(e, index, 'height')}
+                    className="!py-1.5"
+                  />
+                </td>
+                <td className="py-1.5 px-2 text-right font-mono text-[var(--color-title)]">
+                  {row.subVolume.toFixed(2)}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
+      {/* Total Volume */}
+      <div className="flex justify-end mt-4 pt-3 border-t border-[var(--color-border)]">
+        <div>
+          <span className="text-sm text-[var(--color-muted)] mr-2">Total Volume:</span>
+          <span className="font-mono font-medium text-[var(--color-title)]">
+            {totalVolume.toFixed(2)} m³
+          </span>
+        </div>
       </div>
     </Section>
   );
