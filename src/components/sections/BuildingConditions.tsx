@@ -14,6 +14,7 @@ export default function BuildingConditions() {
     removeVolumeRow,
     updateVolumeRow,
     pasteVolumeRows,
+    pasteColumnData,
     getCalculatedResults,
   } = useReportStore();
 
@@ -24,7 +25,7 @@ export default function BuildingConditions() {
     { value: 'area', label: 'Area' },
   ];
 
-  // Handle paste in any input - if multi-line, fill down the column
+  // Handle paste in any input - if multi-line, fill down the column (creates rows if needed)
   const handlePaste = (
     e: React.ClipboardEvent<HTMLInputElement>,
     rowIndex: number,
@@ -44,23 +45,11 @@ export default function BuildingConditions() {
         if (count > 0) return;
       }
 
-      // Otherwise, fill down the single column (only existing rows)
-      lines.forEach((line, i) => {
-        const targetIndex = rowIndex + i;
+      // Extract values (take first cell if tabs present)
+      const values = lines.map((line) => line.split('\t')[0].trim());
 
-        // Only update existing rows, ignore overflow
-        if (targetIndex >= volumeRows.length) return;
-
-        const value = line.split('\t')[0].trim();
-        const row = volumeRows[targetIndex];
-
-        if (field === 'name') {
-          updateVolumeRow(row.id, { name: value });
-        } else {
-          const num = parseFloat(value) || 0;
-          updateVolumeRow(row.id, { [field]: num });
-        }
-      });
+      // Use batch update function - safe, creates rows as needed, max 500
+      pasteColumnData(field, rowIndex, values);
     }
   };
 
