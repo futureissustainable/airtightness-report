@@ -37,8 +37,21 @@ export interface GeneralInfo {
   reportNumber: string;
   projectAddress: string;
   technicianName: string;
+  testerSignatureImage: string | null;
   testDate: string;
   softwareVersion: string;
+}
+
+export interface EquipmentInfo {
+  manufacturer: string;
+  model: string;
+  calibrationDate: string;
+  calibrationValidUntil: string;
+}
+
+export interface TestConditions {
+  windSpeed: number;
+  windSpeedSource: string;
 }
 
 export interface BuildingConditions {
@@ -72,6 +85,8 @@ export interface Report {
   createdAt: string;
   updatedAt: string;
   generalInfo: GeneralInfo;
+  equipmentInfo: EquipmentInfo;
+  testConditions: TestConditions;
   buildingConditions: BuildingConditions;
   volumeRows: VolumeRow[];
   sealItems: SealItem[];

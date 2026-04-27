@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Card } from '@/components/ui';
 import {
   GeneralInformation,
+  EquipmentAndConditions,
   BuildingConditions,
   VolumeCalculation,
   BuildingPreparation,
@@ -111,6 +112,10 @@ export default function Home() {
           <div className="space-y-6 print:space-y-3">
             <Card>
               <GeneralInformation />
+            </Card>
+
+            <Card>
+              <EquipmentAndConditions />
             </Card>
 
             <Card>

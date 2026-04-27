@@ -1,7 +1,7 @@
 'use client';
 
 import { useReportStore } from '@/store/reportStore';
-import { Section, Input } from '@/components/ui';
+import { Section, Input, ImageUpload } from '@/components/ui';
 
 export default function GeneralInformation() {
   const { generalInfo, updateGeneralInfo } = useReportStore();
@@ -34,8 +34,8 @@ export default function GeneralInformation() {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
         <Input
-          label="Technician"
-          placeholder="Technician's Name"
+          label="Tester full name"
+          placeholder="Full name of the tester performing the measurement"
           value={generalInfo.technicianName}
           onChange={(e) => updateGeneralInfo({ technicianName: e.target.value })}
         />
@@ -51,6 +51,21 @@ export default function GeneralInformation() {
           value={generalInfo.softwareVersion}
           onChange={(e) => updateGeneralInfo({ softwareVersion: e.target.value })}
         />
+      </div>
+
+      <div className="mt-4">
+        <label className="text-sm font-medium text-[var(--color-title)] mb-1.5 block">
+          Tester signature
+        </label>
+        <ImageUpload
+          imageData={generalInfo.testerSignatureImage}
+          onImageChange={(data) => updateGeneralInfo({ testerSignatureImage: data })}
+        />
+        {!generalInfo.testerSignatureImage && (
+          <p className="text-xs text-[var(--color-error)] mt-1.5">
+            Required by SR EN ISO 9972:2016 — upload a scanned/photographed signature.
+          </p>
+        )}
       </div>
     </Section>
   );

@@ -3,6 +3,8 @@ import { persist } from 'zustand/middleware';
 import type {
   Report,
   GeneralInfo,
+  EquipmentInfo,
+  TestConditions,
   BuildingConditions,
   VolumeRow,
   SealItem,
@@ -58,8 +60,21 @@ const getDefaultGeneralInfo = (): GeneralInfo => ({
   reportNumber: '',
   projectAddress: '',
   technicianName: '',
+  testerSignatureImage: null,
   testDate: new Date().toISOString().split('T')[0],
   softwareVersion: '',
+});
+
+const getDefaultEquipmentInfo = (): EquipmentInfo => ({
+  manufacturer: '',
+  model: '',
+  calibrationDate: '',
+  calibrationValidUntil: '',
+});
+
+const getDefaultTestConditions = (): TestConditions => ({
+  windSpeed: 0,
+  windSpeedSource: '',
 });
 
 const getDefaultBuildingConditions = (): BuildingConditions => ({
@@ -80,6 +95,8 @@ interface ReportState {
   currentReportId: string | null;
   hasUnsavedChanges: boolean;
   generalInfo: GeneralInfo;
+  equipmentInfo: EquipmentInfo;
+  testConditions: TestConditions;
   buildingConditions: BuildingConditions;
   volumeRows: VolumeRow[];
   sealItems: SealItem[];
@@ -92,6 +109,12 @@ interface ReportState {
 
   // Actions - General Info
   updateGeneralInfo: (info: Partial<GeneralInfo>) => void;
+
+  // Actions - Equipment Info
+  updateEquipmentInfo: (info: Partial<EquipmentInfo>) => void;
+
+  // Actions - Test Conditions
+  updateTestConditions: (conditions: Partial<TestConditions>) => void;
 
   // Actions - Building Conditions
   updateBuildingConditions: (conditions: Partial<BuildingConditions>) => void;
@@ -143,6 +166,8 @@ export const useReportStore = create<ReportState>()(
       currentReportId: null,
       hasUnsavedChanges: false,
       generalInfo: getDefaultGeneralInfo(),
+      equipmentInfo: getDefaultEquipmentInfo(),
+      testConditions: getDefaultTestConditions(),
       buildingConditions: getDefaultBuildingConditions(),
       volumeRows: [createDefaultVolumeRow()],
       sealItems: [createDefaultSealItem()],
@@ -155,6 +180,20 @@ export const useReportStore = create<ReportState>()(
       updateGeneralInfo: (info) =>
         set((state) => ({
           generalInfo: { ...state.generalInfo, ...info },
+          hasUnsavedChanges: true,
+        })),
+
+      // Actions - Equipment Info
+      updateEquipmentInfo: (info) =>
+        set((state) => ({
+          equipmentInfo: { ...state.equipmentInfo, ...info },
+          hasUnsavedChanges: true,
+        })),
+
+      // Actions - Test Conditions
+      updateTestConditions: (conditions) =>
+        set((state) => ({
+          testConditions: { ...state.testConditions, ...conditions },
           hasUnsavedChanges: true,
         })),
 
@@ -442,6 +481,8 @@ export const useReportStore = create<ReportState>()(
             : now,
           updatedAt: now,
           generalInfo: state.generalInfo,
+          equipmentInfo: state.equipmentInfo,
+          testConditions: state.testConditions,
           buildingConditions: state.buildingConditions,
           volumeRows: state.volumeRows,
           sealItems: state.sealItems,
@@ -467,7 +508,9 @@ export const useReportStore = create<ReportState>()(
         set({
           currentReportId: report.id,
           hasUnsavedChanges: false,
-          generalInfo: report.generalInfo,
+          generalInfo: { ...getDefaultGeneralInfo(), ...report.generalInfo },
+          equipmentInfo: { ...getDefaultEquipmentInfo(), ...(report.equipmentInfo ?? {}) },
+          testConditions: { ...getDefaultTestConditions(), ...(report.testConditions ?? {}) },
           buildingConditions: report.buildingConditions,
           volumeRows: report.volumeRows,
           sealItems: report.sealItems,
@@ -488,6 +531,8 @@ export const useReportStore = create<ReportState>()(
           currentReportId: null,
           hasUnsavedChanges: false,
           generalInfo: getDefaultGeneralInfo(),
+          equipmentInfo: getDefaultEquipmentInfo(),
+          testConditions: getDefaultTestConditions(),
           buildingConditions: getDefaultBuildingConditions(),
           volumeRows: [createDefaultVolumeRow()],
           sealItems: [createDefaultSealItem()],
@@ -508,8 +553,27 @@ export const useReportStore = create<ReportState>()(
             reportNumber: inputs['report-number'] || '',
             projectAddress: inputs['project-address'] || '',
             technicianName: inputs['technician-name'] || '',
+            testerSignatureImage:
+              typeof inputs['tester-signature'] === 'string' &&
+              inputs['tester-signature'].startsWith('data:')
+                ? inputs['tester-signature']
+                : null,
             testDate: inputs['test-date'] || new Date().toISOString().split('T')[0],
             softwareVersion: inputs['software-version'] || '',
+          };
+
+          // Map equipment info
+          const equipmentInfo: EquipmentInfo = {
+            manufacturer: inputs['equipment-manufacturer'] || '',
+            model: inputs['equipment-model'] || '',
+            calibrationDate: inputs['equipment-calibration-date'] || '',
+            calibrationValidUntil: inputs['equipment-calibration-valid-until'] || '',
+          };
+
+          // Map test conditions
+          const testConditions: TestConditions = {
+            windSpeed: parseFloat(inputs['wind-speed']) || 0,
+            windSpeedSource: inputs['wind-speed-source'] || '',
           };
 
           // Map building conditions
@@ -586,6 +650,8 @@ export const useReportStore = create<ReportState>()(
             currentReportId: null,
             hasUnsavedChanges: true,
             generalInfo,
+            equipmentInfo,
+            testConditions,
             buildingConditions,
             volumeRows,
             sealItems,
@@ -609,8 +675,15 @@ export const useReportStore = create<ReportState>()(
             'report-number': state.generalInfo.reportNumber,
             'project-address': state.generalInfo.projectAddress,
             'technician-name': state.generalInfo.technicianName,
+            'tester-signature': state.generalInfo.testerSignatureImage || '',
             'test-date': state.generalInfo.testDate,
             'software-version': state.generalInfo.softwareVersion,
+            'equipment-manufacturer': state.equipmentInfo.manufacturer,
+            'equipment-model': state.equipmentInfo.model,
+            'equipment-calibration-date': state.equipmentInfo.calibrationDate,
+            'equipment-calibration-valid-until': state.equipmentInfo.calibrationValidUntil,
+            'wind-speed': String(state.testConditions.windSpeed),
+            'wind-speed-source': state.testConditions.windSpeedSource,
             'envelope-area': String(state.buildingConditions.envelopeArea),
             'floor-area': String(state.buildingConditions.floorArea),
             'internal-temp': String(state.buildingConditions.internalTemp),
@@ -739,6 +812,8 @@ export const useReportStore = create<ReportState>()(
       partialize: (state) => ({
         currentReportId: state.currentReportId,
         generalInfo: state.generalInfo,
+        equipmentInfo: state.equipmentInfo,
+        testConditions: state.testConditions,
         buildingConditions: state.buildingConditions,
         volumeRows: state.volumeRows,
         sealItems: state.sealItems,

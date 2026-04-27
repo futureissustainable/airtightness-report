@@ -7,7 +7,7 @@ export default function BuildingConditions() {
   const { buildingConditions, updateBuildingConditions } = useReportStore();
 
   return (
-    <Section title="Conditions" sectionNumber={2}>
+    <Section title="Conditions" sectionNumber={3}>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <Input
           label="Envelope Area (Aₑ)"
