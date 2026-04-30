@@ -53,7 +53,7 @@ export default function VolumeCalculation() {
   return (
     <Section
       title="Volume"
-      sectionNumber={3}
+      sectionNumber={4}
       onAdd={addVolumeRow}
       onRemove={volumeRows.length > 1 ? removeVolumeRow : undefined}
     >
