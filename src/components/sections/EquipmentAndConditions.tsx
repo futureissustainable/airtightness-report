@@ -1,7 +1,7 @@
 'use client';
 
 import { useReportStore } from '@/store/reportStore';
-import { Section, Input, Select, ImageUpload } from '@/components/ui';
+import { Section, Input, Select, MultiImageUpload } from '@/components/ui';
 
 const WIND_SOURCE_OPTIONS = [
   { value: '', label: 'Select source…' },
@@ -163,10 +163,10 @@ export default function EquipmentAndConditions() {
           <p className="text-sm font-medium text-[var(--color-title)] mb-1.5">
             Blower door installed in opening
           </p>
-          <ImageUpload
-            imageData={equipmentInfo.blowerDoorPhoto}
-            onImageChange={(data) =>
-              updateEquipmentInfo({ blowerDoorPhoto: data })
+          <MultiImageUpload
+            images={equipmentInfo.blowerDoorPhotos}
+            onChange={(images) =>
+              updateEquipmentInfo({ blowerDoorPhotos: images })
             }
           />
         </div>
@@ -174,10 +174,10 @@ export default function EquipmentAndConditions() {
           <p className="text-sm font-medium text-[var(--color-title)] mb-1.5">
             Sketch of blower door position
           </p>
-          <ImageUpload
-            imageData={equipmentInfo.blowerDoorSketch}
-            onImageChange={(data) =>
-              updateEquipmentInfo({ blowerDoorSketch: data })
+          <MultiImageUpload
+            images={equipmentInfo.blowerDoorSketches}
+            onChange={(images) =>
+              updateEquipmentInfo({ blowerDoorSketches: images })
             }
           />
         </div>

@@ -12,14 +12,14 @@ export interface VolumeRow {
 export interface SealItem {
   id: string;
   description: string;
-  imageData: string | null;
+  images: string[];
 }
 
 export interface LeakageItem {
   id: string;
   description: string;
   solution: string;
-  imageData: string | null;
+  images: string[];
 }
 
 export interface MeasurementRow {
@@ -51,8 +51,8 @@ export interface EquipmentInfo {
   calibrationHidden: boolean;
   companyName: string;
   testMethod: '' | '1' | '2' | '3';
-  blowerDoorPhoto: string | null;
-  blowerDoorSketch: string | null;
+  blowerDoorPhotos: string[];
+  blowerDoorSketches: string[];
 }
 
 export interface TestConditions {
