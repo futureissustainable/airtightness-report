@@ -17,6 +17,11 @@ const TEST_METHOD_OPTIONS = [
   { value: '3', label: 'Method 3: Test for a specific purpose (e.g., Passivhaus)' },
 ];
 
+const CALIBRATION_VALIDITY_OPTIONS = [
+  { value: 'date', label: 'Specify date' },
+  { value: 'within_interval', label: "Within RETROTEC's official recommended calibration interval." },
+];
+
 export default function EquipmentAndConditions() {
   const {
     equipmentInfo,
@@ -73,41 +78,31 @@ export default function EquipmentAndConditions() {
           label="Fan calibration date"
           type="date"
           value={equipmentInfo.calibrationDate}
-          disabled={equipmentInfo.calibrationNotApplicable}
           onChange={(e) =>
             updateEquipmentInfo({ calibrationDate: e.target.value })
           }
         />
         <div className="flex flex-col gap-1.5 w-full">
-          <div className="flex items-center justify-between">
-            <label className="text-sm font-medium text-[var(--color-title)]">
-              Fan calibration valid until
-            </label>
-            <label className="flex items-start gap-1.5 text-xs text-[var(--color-muted)] cursor-pointer max-w-[60%] text-right leading-snug">
-              <input
-                type="checkbox"
-                className="mt-0.5"
-                checked={equipmentInfo.calibrationNotApplicable}
-                onChange={(e) =>
-                  updateEquipmentInfo({
-                    calibrationNotApplicable: e.target.checked,
-                  })
-                }
-              />
-              <span>
-                Within RETROTEC&apos;s official recommended calibration interval.
-              </span>
-            </label>
-          </div>
-          <Input
-            type="date"
-            value={equipmentInfo.calibrationValidUntil}
-            disabled={equipmentInfo.calibrationNotApplicable}
+          <Select
+            label="Fan calibration valid until"
+            options={CALIBRATION_VALIDITY_OPTIONS}
+            value={equipmentInfo.calibrationNotApplicable ? 'within_interval' : 'date'}
             onChange={(e) =>
-              updateEquipmentInfo({ calibrationValidUntil: e.target.value })
+              updateEquipmentInfo({
+                calibrationNotApplicable: e.target.value === 'within_interval',
+              })
             }
-            error={calibrationExpired ? 'Calibration expired before test date' : undefined}
           />
+          {!equipmentInfo.calibrationNotApplicable && (
+            <Input
+              type="date"
+              value={equipmentInfo.calibrationValidUntil}
+              onChange={(e) =>
+                updateEquipmentInfo({ calibrationValidUntil: e.target.value })
+              }
+              error={calibrationExpired ? 'Calibration expired before test date' : undefined}
+            />
+          )}
         </div>
       </div>
 
