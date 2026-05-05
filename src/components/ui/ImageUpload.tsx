@@ -1,7 +1,8 @@
 'use client';
 
-import { useRef, ChangeEvent } from 'react';
-import { X, UploadSimple } from '@phosphor-icons/react';
+import { useRef, useState, ChangeEvent } from 'react';
+import { X, UploadSimple, CircleNotch } from '@phosphor-icons/react';
+import { processImage } from '@/lib/image';
 
 interface ImageUploadProps {
   imageData: string | null;
@@ -15,20 +16,29 @@ export default function ImageUpload({
   className = '',
 }: ImageUploadProps) {
   const inputRef = useRef<HTMLInputElement>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file && file.type.startsWith('image/')) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        onImageChange(event.target?.result as string);
-      };
-      reader.readAsDataURL(file);
+    if (!file || !file.type.startsWith('image/')) return;
+
+    setIsProcessing(true);
+    setError(null);
+    try {
+      const dataUrl = await processImage(file);
+      onImageChange(dataUrl);
+    } catch {
+      setError('Could not process image. Please try a different file.');
+    } finally {
+      setIsProcessing(false);
+      if (inputRef.current) inputRef.current.value = '';
     }
   };
 
   const handleRemove = () => {
     onImageChange(null);
+    setError(null);
     if (inputRef.current) {
       inputRef.current.value = '';
     }
@@ -63,11 +73,24 @@ export default function ImageUpload({
         <button
           type="button"
           onClick={() => inputRef.current?.click()}
-          className="w-full py-6 border border-dashed border-[var(--color-border)] flex items-center justify-center gap-2 text-[var(--color-muted)] hover:border-[var(--color-title)] hover:text-[var(--color-title)] transition-colors cursor-pointer"
+          disabled={isProcessing}
+          className="w-full py-6 border border-dashed border-[var(--color-border)] flex items-center justify-center gap-2 text-[var(--color-muted)] hover:border-[var(--color-title)] hover:text-[var(--color-title)] transition-colors cursor-pointer disabled:cursor-wait disabled:opacity-70"
         >
-          <UploadSimple weight="bold" className="w-4 h-4" />
-          <span className="text-sm">Upload image</span>
+          {isProcessing ? (
+            <>
+              <CircleNotch weight="bold" className="w-4 h-4 animate-spin" />
+              <span className="text-sm">Processing…</span>
+            </>
+          ) : (
+            <>
+              <UploadSimple weight="bold" className="w-4 h-4" />
+              <span className="text-sm">Upload image</span>
+            </>
+          )}
         </button>
+      )}
+      {error && (
+        <p className="text-xs text-[var(--color-error)] mt-1.5">{error}</p>
       )}
     </div>
   );
