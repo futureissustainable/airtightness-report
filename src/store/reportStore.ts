@@ -33,14 +33,14 @@ const createDefaultVolumeRow = (): VolumeRow => ({
 const createDefaultSealItem = (): SealItem => ({
   id: generateId(),
   description: '',
-  imageData: null,
+  images: [],
 });
 
 const createDefaultLeakageItem = (): LeakageItem => ({
   id: generateId(),
   description: '',
   solution: '',
-  imageData: null,
+  images: [],
 });
 
 const createDefaultMeasurementRow = (pressure: number = 0): MeasurementRow => ({
@@ -74,8 +74,8 @@ const getDefaultEquipmentInfo = (): EquipmentInfo => ({
   calibrationHidden: false,
   companyName: '',
   testMethod: '',
-  blowerDoorPhoto: null,
-  blowerDoorSketch: null,
+  blowerDoorPhotos: [],
+  blowerDoorSketches: [],
 });
 
 const getDefaultTestConditions = (): TestConditions => ({
@@ -575,16 +575,22 @@ export const useReportStore = create<ReportState>()(
             rawTestMethod === '1' || rawTestMethod === '2' || rawTestMethod === '3'
               ? rawTestMethod
               : '';
-          const blowerDoorPhoto =
-            typeof inputs['blower-door-photo'] === 'string' &&
-            inputs['blower-door-photo'].startsWith('data:')
-              ? inputs['blower-door-photo']
-              : null;
-          const blowerDoorSketch =
-            typeof inputs['blower-door-sketch'] === 'string' &&
-            inputs['blower-door-sketch'].startsWith('data:')
-              ? inputs['blower-door-sketch']
-              : null;
+          const toImageArray = (value: unknown): string[] => {
+            const candidates = Array.isArray(value)
+              ? value
+              : typeof value === 'string' && value
+                ? [value]
+                : [];
+            return candidates.filter(
+              (v): v is string => typeof v === 'string' && v.startsWith('data:'),
+            );
+          };
+          const blowerDoorPhotos = toImageArray(
+            inputs['blower-door-photos'] ?? inputs['blower-door-photo'],
+          );
+          const blowerDoorSketches = toImageArray(
+            inputs['blower-door-sketches'] ?? inputs['blower-door-sketch'],
+          );
           const equipmentInfo: EquipmentInfo = {
             manufacturer: inputs['equipment-manufacturer'] || '',
             model: inputs['equipment-model'] || '',
@@ -598,8 +604,8 @@ export const useReportStore = create<ReportState>()(
               inputs['equipment-calibration-hidden'] === true,
             companyName: inputs['company-name'] || '',
             testMethod,
-            blowerDoorPhoto,
-            blowerDoorSketch,
+            blowerDoorPhotos,
+            blowerDoorSketches,
           };
 
           // Map test conditions
@@ -641,18 +647,18 @@ export const useReportStore = create<ReportState>()(
           });
 
           // Map seal items
-          const sealItems: SealItem[] = (data.sealItems || []).map((item: { desc?: string; img?: string }) => ({
+          const sealItems: SealItem[] = (data.sealItems || []).map((item: { desc?: string; img?: string; imgs?: unknown }) => ({
             id: generateId(),
             description: item.desc || '',
-            imageData: item.img && item.img.startsWith('data:') ? item.img : null,
+            images: toImageArray(item.imgs ?? item.img),
           }));
 
           // Map leakage items
-          const leakageItems: LeakageItem[] = (data.leakageItems || []).map((item: { desc?: string; sol?: string; img?: string }) => ({
+          const leakageItems: LeakageItem[] = (data.leakageItems || []).map((item: { desc?: string; sol?: string; img?: string; imgs?: unknown }) => ({
             id: generateId(),
             description: item.desc || '',
             solution: item.sol || '',
-            imageData: item.img && item.img.startsWith('data:') ? item.img : null,
+            images: toImageArray(item.imgs ?? item.img),
           }));
 
           // Map measurement rows
@@ -721,8 +727,8 @@ export const useReportStore = create<ReportState>()(
             'equipment-calibration-hidden': state.equipmentInfo.calibrationHidden ? '1' : '',
             'company-name': state.equipmentInfo.companyName,
             'test-method': state.equipmentInfo.testMethod,
-            'blower-door-photo': state.equipmentInfo.blowerDoorPhoto || '',
-            'blower-door-sketch': state.equipmentInfo.blowerDoorSketch || '',
+            'blower-door-photos': state.equipmentInfo.blowerDoorPhotos,
+            'blower-door-sketches': state.equipmentInfo.blowerDoorSketches,
             'wind-speed': String(state.testConditions.windSpeed),
             'wind-speed-source': state.testConditions.windSpeedSource,
             'envelope-area': String(state.buildingConditions.envelopeArea),
@@ -744,12 +750,12 @@ export const useReportStore = create<ReportState>()(
           })),
           sealItems: state.sealItems.map((item) => ({
             desc: item.description,
-            img: item.imageData || '',
+            imgs: item.images,
           })),
           leakageItems: state.leakageItems.map((item) => ({
             desc: item.description,
             sol: item.solution,
-            img: item.imageData || '',
+            imgs: item.images,
           })),
           measurementRows: state.measurementRows.map((row) => ({
             dep_p: String(row.depPressure),
@@ -775,13 +781,13 @@ export const useReportStore = create<ReportState>()(
 
         // Filter empty seal items (keep at least 0)
         const cleanSealItems = state.sealItems.filter(
-          (item) => item.description || item.imageData
+          (item) => item.description || item.images.length > 0
         );
         removedCount += state.sealItems.length - cleanSealItems.length;
 
         // Filter empty leakage items (keep at least 0)
         const cleanLeakageItems = state.leakageItems.filter(
-          (item) => item.description || item.solution || item.imageData
+          (item) => item.description || item.solution || item.images.length > 0
         );
         removedCount += state.leakageItems.length - cleanLeakageItems.length;
 
@@ -851,6 +857,54 @@ export const useReportStore = create<ReportState>()(
     }),
     {
       name: 'airtightness-report-storage',
+      version: 2,
+      migrate: (persistedState, version) => {
+        const state = persistedState as Record<string, unknown> | undefined;
+        if (!state) return state;
+        if (version < 2) {
+          const single = (v: unknown): string[] =>
+            typeof v === 'string' && v.startsWith('data:') ? [v] : [];
+
+          const migrateItems = <T extends { imageData?: unknown; images?: unknown }>(items: unknown): T[] => {
+            if (!Array.isArray(items)) return items as T[];
+            return items.map((it) => {
+              const item = { ...(it as Record<string, unknown>) };
+              if (Array.isArray(item.images)) return item as T;
+              item.images = single(item.imageData);
+              delete item.imageData;
+              return item as T;
+            });
+          };
+
+          const migrateEquipment = (eq: unknown) => {
+            if (!eq || typeof eq !== 'object') return eq;
+            const e = { ...(eq as Record<string, unknown>) };
+            if (!Array.isArray(e.blowerDoorPhotos)) {
+              e.blowerDoorPhotos = single(e.blowerDoorPhoto);
+              delete e.blowerDoorPhoto;
+            }
+            if (!Array.isArray(e.blowerDoorSketches)) {
+              e.blowerDoorSketches = single(e.blowerDoorSketch);
+              delete e.blowerDoorSketch;
+            }
+            return e;
+          };
+
+          state.sealItems = migrateItems(state.sealItems);
+          state.leakageItems = migrateItems(state.leakageItems);
+          state.equipmentInfo = migrateEquipment(state.equipmentInfo);
+
+          if (Array.isArray(state.savedReports)) {
+            state.savedReports = (state.savedReports as Record<string, unknown>[]).map((r) => ({
+              ...r,
+              sealItems: migrateItems(r.sealItems),
+              leakageItems: migrateItems(r.leakageItems),
+              equipmentInfo: migrateEquipment(r.equipmentInfo),
+            }));
+          }
+        }
+        return state;
+      },
       partialize: (state) => ({
         currentReportId: state.currentReportId,
         generalInfo: state.generalInfo,

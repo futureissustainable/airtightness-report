@@ -1,7 +1,7 @@
 'use client';
 
 import { useReportStore } from '@/store/reportStore';
-import { Section, Textarea, ImageUpload } from '@/components/ui';
+import { Section, Textarea, MultiImageUpload } from '@/components/ui';
 
 export default function LeakageIdentification() {
   const {
@@ -48,13 +48,11 @@ export default function LeakageIdentification() {
                 />
                 <div>
                   <label className="text-sm font-medium text-[var(--color-title)] block mb-2">
-                    Photo
+                    Photos
                   </label>
-                  <ImageUpload
-                    imageData={item.imageData}
-                    onImageChange={(data) =>
-                      updateLeakageItem(item.id, { imageData: data })
-                    }
+                  <MultiImageUpload
+                    images={item.images}
+                    onChange={(images) => updateLeakageItem(item.id, { images })}
                   />
                 </div>
               </div>

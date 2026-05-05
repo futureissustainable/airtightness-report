@@ -1,7 +1,7 @@
 'use client';
 
 import { useReportStore } from '@/store/reportStore';
-import { Section, Textarea, ImageUpload } from '@/components/ui';
+import { Section, Textarea, MultiImageUpload } from '@/components/ui';
 
 const WATER_PIPE_PATTERN = /water|pipe|plumb|apă|apa|ţeavă|teava|conductă|conducta/i;
 
@@ -27,7 +27,7 @@ export default function BuildingPreparation() {
       ) : (
         <div className="space-y-4">
           {sealItems.map((item, index) => {
-            const missingPhoto = !item.imageData;
+            const missingPhoto = item.images.length === 0;
             const waterPipeFlag = WATER_PIPE_PATTERN.test(item.description);
             return (
               <div key={item.id} className="border border-[var(--color-border)] p-4">
@@ -48,16 +48,14 @@ export default function BuildingPreparation() {
                       is appropriate before submitting.
                     </p>
                   )}
-                  <ImageUpload
-                    imageData={item.imageData}
-                    onImageChange={(data) =>
-                      updateSealItem(item.id, { imageData: data })
-                    }
+                  <MultiImageUpload
+                    images={item.images}
+                    onChange={(images) => updateSealItem(item.id, { images })}
                   />
                   {missingPhoto && (
                     <p className="text-xs text-[var(--color-error)]">
                       Photo required. Every temporary seal must be documented
-                      with a photo for traceability.
+                      with at least one photo for traceability.
                     </p>
                   )}
                 </div>
