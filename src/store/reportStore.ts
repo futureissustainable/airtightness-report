@@ -71,6 +71,7 @@ const getDefaultEquipmentInfo = (): EquipmentInfo => ({
   calibrationDate: '',
   calibrationValidUntil: '',
   calibrationNotApplicable: false,
+  calibrationHidden: false,
   companyName: '',
   testMethod: '',
   blowerDoorPhoto: null,
@@ -591,6 +592,9 @@ export const useReportStore = create<ReportState>()(
             calibrationNotApplicable:
               inputs['equipment-calibration-not-applicable'] === '1' ||
               inputs['equipment-calibration-not-applicable'] === true,
+            calibrationHidden:
+              inputs['equipment-calibration-hidden'] === '1' ||
+              inputs['equipment-calibration-hidden'] === true,
             companyName: inputs['company-name'] || '',
             testMethod,
             blowerDoorPhoto,
@@ -710,6 +714,7 @@ export const useReportStore = create<ReportState>()(
             'equipment-calibration-date': state.equipmentInfo.calibrationDate,
             'equipment-calibration-valid-until': state.equipmentInfo.calibrationValidUntil,
             'equipment-calibration-not-applicable': state.equipmentInfo.calibrationNotApplicable ? '1' : '',
+            'equipment-calibration-hidden': state.equipmentInfo.calibrationHidden ? '1' : '',
             'company-name': state.equipmentInfo.companyName,
             'test-method': state.equipmentInfo.testMethod,
             'blower-door-photo': state.equipmentInfo.blowerDoorPhoto || '',
