@@ -12,9 +12,9 @@ const WIND_SOURCE_OPTIONS = [
 
 const TEST_METHOD_OPTIONS = [
   { value: '', label: 'Select method…' },
-  { value: '1', label: 'Method 1 — Building in use' },
-  { value: '2', label: 'Method 2 — Building envelope' },
-  { value: '3', label: 'Method 3 — Building component' },
+  { value: '1', label: 'Method 1 — Test of the building in use' },
+  { value: '2', label: 'Method 2 — Test of the building envelope' },
+  { value: '3', label: 'Method 3 — Test for a specific purpose (e.g., Passivhaus)' },
 ];
 
 export default function EquipmentAndConditions() {
