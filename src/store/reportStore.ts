@@ -85,6 +85,7 @@ const getDefaultTestConditions = (): TestConditions => ({
 
 const getDefaultBuildingConditions = (): BuildingConditions => ({
   envelopeArea: 0,
+  envelopeHidden: false,
   floorArea: 0,
   internalTemp: 0,
   externalTemp: 0,
@@ -610,6 +611,9 @@ export const useReportStore = create<ReportState>()(
           // Map building conditions
           const buildingConditions: BuildingConditions = {
             envelopeArea: parseFloat(inputs['envelope-area']) || 0,
+            envelopeHidden:
+              inputs['envelope-hidden'] === '1' ||
+              inputs['envelope-hidden'] === true,
             floorArea: parseFloat(inputs['floor-area']) || 0,
             internalTemp: parseFloat(inputs['internal-temp']) || 0,
             externalTemp: parseFloat(inputs['external-temp']) || 0,
@@ -722,6 +726,7 @@ export const useReportStore = create<ReportState>()(
             'wind-speed': String(state.testConditions.windSpeed),
             'wind-speed-source': state.testConditions.windSpeedSource,
             'envelope-area': String(state.buildingConditions.envelopeArea),
+            'envelope-hidden': state.buildingConditions.envelopeHidden ? '1' : '',
             'floor-area': String(state.buildingConditions.floorArea),
             'internal-temp': String(state.buildingConditions.internalTemp),
             'external-temp': String(state.buildingConditions.externalTemp),

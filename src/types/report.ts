@@ -62,6 +62,7 @@ export interface TestConditions {
 
 export interface BuildingConditions {
   envelopeArea: number;
+  envelopeHidden: boolean;
   floorArea: number;
   internalTemp: number;
   externalTemp: number;
