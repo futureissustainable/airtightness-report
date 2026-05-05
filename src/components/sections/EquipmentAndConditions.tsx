@@ -95,8 +95,7 @@ export default function EquipmentAndConditions() {
                 }
               />
               <span>
-                Certified by the tester within RETROTEC&apos;s official
-                recommended calibration interval.
+                Within RETROTEC&apos;s official recommended calibration interval.
               </span>
             </label>
           </div>
