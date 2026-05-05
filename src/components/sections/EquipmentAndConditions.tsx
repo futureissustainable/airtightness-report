@@ -74,53 +74,76 @@ export default function EquipmentAndConditions() {
         />
       </div>
 
-      <div className="flex justify-end mt-4">
-        <label className="flex items-center gap-1.5 text-xs text-[var(--color-muted)] cursor-pointer">
-          <input
-            type="checkbox"
-            checked={equipmentInfo.calibrationHidden}
-            onChange={(e) =>
-              updateEquipmentInfo({ calibrationHidden: e.target.checked })
+      <div className="border border-[var(--color-border)] mt-6">
+        <div className="flex items-center justify-between px-4 py-3 bg-[var(--color-surface)] border-b border-[var(--color-border)]">
+          <h4 className="text-sm font-medium text-[var(--color-title)]">
+            Fan calibration
+          </h4>
+          <button
+            type="button"
+            role="switch"
+            aria-checked={!equipmentInfo.calibrationHidden}
+            onClick={() =>
+              updateEquipmentInfo({
+                calibrationHidden: !equipmentInfo.calibrationHidden,
+              })
             }
-          />
-          Hide calibration dates
-        </label>
-      </div>
+            className="flex items-center gap-2 text-xs text-[var(--color-muted)] cursor-pointer"
+          >
+            <span>{equipmentInfo.calibrationHidden ? 'Off' : 'On'}</span>
+            <span
+              className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
+                equipmentInfo.calibrationHidden
+                  ? 'bg-[var(--color-border)]'
+                  : 'bg-[var(--color-title)]'
+              }`}
+            >
+              <span
+                className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform ${
+                  equipmentInfo.calibrationHidden
+                    ? 'translate-x-1'
+                    : 'translate-x-5'
+                }`}
+              />
+            </span>
+          </button>
+        </div>
 
-      {!equipmentInfo.calibrationHidden && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
-          <Input
-            label="Fan calibration date"
-            type="date"
-            value={equipmentInfo.calibrationDate}
-            onChange={(e) =>
-              updateEquipmentInfo({ calibrationDate: e.target.value })
-            }
-          />
-          <div className="flex flex-col gap-1.5 w-full">
-            <Select
-              label="Fan calibration valid until"
-              options={CALIBRATION_VALIDITY_OPTIONS}
-              value={equipmentInfo.calibrationNotApplicable ? 'within_interval' : 'date'}
+        {!equipmentInfo.calibrationHidden && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
+            <Input
+              label="Fan calibration date"
+              type="date"
+              value={equipmentInfo.calibrationDate}
               onChange={(e) =>
-                updateEquipmentInfo({
-                  calibrationNotApplicable: e.target.value === 'within_interval',
-                })
+                updateEquipmentInfo({ calibrationDate: e.target.value })
               }
             />
-            {!equipmentInfo.calibrationNotApplicable && (
-              <Input
-                type="date"
-                value={equipmentInfo.calibrationValidUntil}
+            <div className="flex flex-col gap-1.5 w-full">
+              <Select
+                label="Fan calibration valid until"
+                options={CALIBRATION_VALIDITY_OPTIONS}
+                value={equipmentInfo.calibrationNotApplicable ? 'within_interval' : 'date'}
                 onChange={(e) =>
-                  updateEquipmentInfo({ calibrationValidUntil: e.target.value })
+                  updateEquipmentInfo({
+                    calibrationNotApplicable: e.target.value === 'within_interval',
+                  })
                 }
-                error={calibrationExpired ? 'Calibration expired before test date' : undefined}
               />
-            )}
+              {!equipmentInfo.calibrationNotApplicable && (
+                <Input
+                  type="date"
+                  value={equipmentInfo.calibrationValidUntil}
+                  onChange={(e) =>
+                    updateEquipmentInfo({ calibrationValidUntil: e.target.value })
+                  }
+                  error={calibrationExpired ? 'Calibration expired before test date' : undefined}
+                />
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
         <Input
