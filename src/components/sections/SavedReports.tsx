@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useReportStore } from '@/store/reportStore';
-import { Button, Textarea } from '@/components/ui';
+import { Button } from '@/components/ui';
 import { FloppyDisk, Plus, X, Trash, Export } from '@phosphor-icons/react';
 
 interface SavedReportsProps {
@@ -142,7 +142,7 @@ export default function SavedReports({ isOpen, onClose }: SavedReportsProps) {
 
         {showImport && (
           <div className="p-4 border-b border-[var(--color-border)] bg-[var(--color-background)]">
-            <Textarea
+            <textarea
               placeholder="Paste legacy report code here..."
               value={importCode}
               onChange={(e) => {
@@ -150,8 +150,13 @@ export default function SavedReports({ isOpen, onClose }: SavedReportsProps) {
                 setImportError(false);
               }}
               rows={3}
-              className="text-xs font-mono"
+              className="w-full px-3 py-2.5 text-xs font-mono bg-white border border-[var(--color-border)] text-[var(--color-title)] placeholder:text-[var(--color-muted)] focus:border-[var(--color-title)] focus:ring-2 focus:ring-[var(--color-title)]/10 max-h-32 overflow-auto resize-none transition-colors duration-200"
             />
+            {importCode.length > 0 && (
+              <p className="text-[10px] text-[var(--color-muted)] mt-1">
+                {importCode.length.toLocaleString()} characters pasted
+              </p>
+            )}
             {importError && (
               <p className="text-xs text-[var(--color-error)] mt-2">
                 Invalid code format. Please check and try again.
