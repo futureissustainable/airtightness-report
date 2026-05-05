@@ -83,9 +83,10 @@ export default function EquipmentAndConditions() {
             <label className="text-sm font-medium text-[var(--color-title)]">
               Fan calibration valid until
             </label>
-            <label className="flex items-center gap-1.5 text-xs text-[var(--color-muted)] cursor-pointer">
+            <label className="flex items-start gap-1.5 text-xs text-[var(--color-muted)] cursor-pointer max-w-[60%] text-right leading-snug">
               <input
                 type="checkbox"
+                className="mt-0.5"
                 checked={equipmentInfo.calibrationNotApplicable}
                 onChange={(e) =>
                   updateEquipmentInfo({
@@ -93,7 +94,10 @@ export default function EquipmentAndConditions() {
                   })
                 }
               />
-              Not applicable
+              <span>
+                Certified by the tester within RETROTEC&apos;s official
+                recommended calibration interval.
+              </span>
             </label>
           </div>
           <Input
