@@ -12,9 +12,9 @@ const WIND_SOURCE_OPTIONS = [
 
 const TEST_METHOD_OPTIONS = [
   { value: '', label: 'Select method…' },
-  { value: '1', label: 'Method 1 — Test of the building in use' },
-  { value: '2', label: 'Method 2 — Test of the building envelope' },
-  { value: '3', label: 'Method 3 — Test for a specific purpose (e.g., Passivhaus)' },
+  { value: '1', label: 'Method 1: Test of the building in use' },
+  { value: '2', label: 'Method 2: Test of the building envelope' },
+  { value: '3', label: 'Method 3: Test for a specific purpose (e.g., Passivhaus)' },
 ];
 
 export default function EquipmentAndConditions() {
@@ -27,6 +27,7 @@ export default function EquipmentAndConditions() {
   } = useReportStore();
 
   const calibrationExpired =
+    !equipmentInfo.calibrationNotApplicable &&
     equipmentInfo.calibrationValidUntil &&
     generalInfo.testDate &&
     equipmentInfo.calibrationValidUntil < generalInfo.testDate;
@@ -72,19 +73,39 @@ export default function EquipmentAndConditions() {
           label="Calibration date"
           type="date"
           value={equipmentInfo.calibrationDate}
+          disabled={equipmentInfo.calibrationNotApplicable}
           onChange={(e) =>
             updateEquipmentInfo({ calibrationDate: e.target.value })
           }
         />
-        <Input
-          label="Calibration valid until"
-          type="date"
-          value={equipmentInfo.calibrationValidUntil}
-          onChange={(e) =>
-            updateEquipmentInfo({ calibrationValidUntil: e.target.value })
-          }
-          error={calibrationExpired ? 'Calibration expired before test date' : undefined}
-        />
+        <div className="flex flex-col gap-1.5 w-full">
+          <div className="flex items-center justify-between">
+            <label className="text-sm font-medium text-[var(--color-title)]">
+              Calibration valid until
+            </label>
+            <label className="flex items-center gap-1.5 text-xs text-[var(--color-muted)] cursor-pointer">
+              <input
+                type="checkbox"
+                checked={equipmentInfo.calibrationNotApplicable}
+                onChange={(e) =>
+                  updateEquipmentInfo({
+                    calibrationNotApplicable: e.target.checked,
+                  })
+                }
+              />
+              Not applicable
+            </label>
+          </div>
+          <Input
+            type="date"
+            value={equipmentInfo.calibrationValidUntil}
+            disabled={equipmentInfo.calibrationNotApplicable}
+            onChange={(e) =>
+              updateEquipmentInfo({ calibrationValidUntil: e.target.value })
+            }
+            error={calibrationExpired ? 'Calibration expired before test date' : undefined}
+          />
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">

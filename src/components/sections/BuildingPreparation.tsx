@@ -56,7 +56,7 @@ export default function BuildingPreparation() {
                   />
                   {missingPhoto && (
                     <p className="text-xs text-[var(--color-error)]">
-                      Photo required — every temporary seal must be documented
+                      Photo required. Every temporary seal must be documented
                       with a photo for traceability.
                     </p>
                   )}
