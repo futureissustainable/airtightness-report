@@ -105,7 +105,7 @@ export default function VolumeCalculation() {
                       className="!py-1.5"
                     />
                   ) : (
-                    <span className="text-[var(--color-muted)]">—</span>
+                    <span className="text-[var(--color-muted)]">-</span>
                   )}
                 </td>
                 <td className="py-1.5 px-2">
@@ -121,7 +121,7 @@ export default function VolumeCalculation() {
                       className="!py-1.5"
                     />
                   ) : (
-                    <span className="text-[var(--color-muted)]">—</span>
+                    <span className="text-[var(--color-muted)]">-</span>
                   )}
                 </td>
                 <td className="py-1.5 px-2">
@@ -137,7 +137,7 @@ export default function VolumeCalculation() {
                       className="!py-1.5"
                     />
                   ) : (
-                    <span className="text-[var(--color-muted)]">—</span>
+                    <span className="text-[var(--color-muted)]">-</span>
                   )}
                 </td>
                 <td className="py-1.5 px-2">

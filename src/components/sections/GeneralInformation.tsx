@@ -63,7 +63,7 @@ export default function GeneralInformation() {
         />
         {!generalInfo.testerSignatureImage && (
           <p className="text-xs text-[var(--color-error)] mt-1.5">
-            Required by SR EN ISO 9972:2016 — upload a scanned/photographed signature.
+            Required by SR EN ISO 9972:2016. Upload a scanned or photographed signature.
           </p>
         )}
       </div>

@@ -91,7 +91,7 @@ export default function Results() {
           <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-[var(--color-success)]/20">
             <Check weight="bold" className="w-4 h-4 text-[var(--color-success)]" />
             <span className="text-sm font-medium text-[var(--color-success)]">
-              PASS — n₅₀ ≤ {results.requiredN50.toFixed(2)}
+              PASS. n₅₀ ≤ {results.requiredN50.toFixed(2)}
             </span>
           </div>
         )}
@@ -100,7 +100,7 @@ export default function Results() {
           <div className="inline-flex items-center gap-2 px-5 py-2.5 bg-[var(--color-error)]/20">
             <X weight="bold" className="w-4 h-4 text-[var(--color-error)]" />
             <span className="text-sm font-medium text-[var(--color-error)]">
-              FAIL — n₅₀ &gt; {results.requiredN50.toFixed(2)}
+              FAIL. n₅₀ &gt; {results.requiredN50.toFixed(2)}
             </span>
           </div>
         )}
