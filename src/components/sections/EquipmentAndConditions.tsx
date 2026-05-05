@@ -75,15 +75,17 @@ export default function EquipmentAndConditions() {
       </div>
 
       {equipmentInfo.calibrationHidden ? (
-        <div className="flex items-center gap-3 mt-6">
+        <div className="flex items-center gap-3 mt-6 print:hidden">
           <div className="flex-1 h-px bg-[var(--color-border)]" />
           <button
             type="button"
             onClick={() => updateEquipmentInfo({ calibrationHidden: false })}
-            className="text-xs text-[var(--color-muted)] hover:text-[var(--color-title)] transition-colors"
+            className="text-[10px] uppercase tracking-wide text-[var(--color-muted)] hover:text-[var(--color-title)] transition-colors"
+            title="Show fan calibration fields (editor only)"
           >
-            + Add fan calibration
+            Show calibration
           </button>
+          <div className="flex-1 h-px bg-[var(--color-border)]" />
         </div>
       ) : (
         <div className="border border-[var(--color-border)] mt-6">
@@ -94,9 +96,9 @@ export default function EquipmentAndConditions() {
             <button
               type="button"
               onClick={() => updateEquipmentInfo({ calibrationHidden: true })}
-              className="text-xs text-[var(--color-muted)] hover:text-[var(--color-title)] transition-colors"
+              className="text-xs text-[var(--color-muted)] hover:text-[var(--color-title)] transition-colors print:hidden"
             >
-              Remove
+              Hide
             </button>
           </div>
 
