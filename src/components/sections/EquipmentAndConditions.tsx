@@ -1,13 +1,20 @@
 'use client';
 
 import { useReportStore } from '@/store/reportStore';
-import { Section, Input, Select } from '@/components/ui';
+import { Section, Input, Select, ImageUpload } from '@/components/ui';
 
 const WIND_SOURCE_OPTIONS = [
   { value: '', label: 'Select source…' },
   { value: 'anemometer', label: 'On-site anemometer' },
   { value: 'met_station', label: 'Nearest meteorological station' },
   { value: 'beaufort', label: 'Beaufort observation' },
+];
+
+const TEST_METHOD_OPTIONS = [
+  { value: '', label: 'Select method…' },
+  { value: '1', label: 'Method 1 — Building in use' },
+  { value: '2', label: 'Method 2 — Building envelope' },
+  { value: '3', label: 'Method 3 — Building component' },
 ];
 
 export default function EquipmentAndConditions() {
@@ -27,6 +34,25 @@ export default function EquipmentAndConditions() {
   return (
     <Section title="Equipment & Test Conditions" sectionNumber={2}>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Input
+          label="Testing company"
+          placeholder="e.g., Acme Airtightness Ltd."
+          value={equipmentInfo.companyName}
+          onChange={(e) => updateEquipmentInfo({ companyName: e.target.value })}
+        />
+        <Select
+          label="Test method (ISO 9972)"
+          options={TEST_METHOD_OPTIONS}
+          value={equipmentInfo.testMethod}
+          onChange={(e) =>
+            updateEquipmentInfo({
+              testMethod: e.target.value as typeof equipmentInfo.testMethod,
+            })
+          }
+        />
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
         <Input
           label="Equipment manufacturer"
           placeholder="e.g., Retrotec, Minneapolis"
@@ -80,6 +106,31 @@ export default function EquipmentAndConditions() {
             updateTestConditions({ windSpeedSource: e.target.value })
           }
         />
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
+        <div>
+          <p className="text-sm font-medium text-[var(--color-title)] mb-1.5">
+            Blower door installed in opening
+          </p>
+          <ImageUpload
+            imageData={equipmentInfo.blowerDoorPhoto}
+            onImageChange={(data) =>
+              updateEquipmentInfo({ blowerDoorPhoto: data })
+            }
+          />
+        </div>
+        <div>
+          <p className="text-sm font-medium text-[var(--color-title)] mb-1.5">
+            Sketch of blower door position
+          </p>
+          <ImageUpload
+            imageData={equipmentInfo.blowerDoorSketch}
+            onImageChange={(data) =>
+              updateEquipmentInfo({ blowerDoorSketch: data })
+            }
+          />
+        </div>
       </div>
     </Section>
   );

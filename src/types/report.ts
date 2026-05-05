@@ -47,6 +47,10 @@ export interface EquipmentInfo {
   model: string;
   calibrationDate: string;
   calibrationValidUntil: string;
+  companyName: string;
+  testMethod: '' | '1' | '2' | '3';
+  blowerDoorPhoto: string | null;
+  blowerDoorSketch: string | null;
 }
 
 export interface TestConditions {

@@ -70,6 +70,10 @@ const getDefaultEquipmentInfo = (): EquipmentInfo => ({
   model: '',
   calibrationDate: '',
   calibrationValidUntil: '',
+  companyName: '',
+  testMethod: '',
+  blowerDoorPhoto: null,
+  blowerDoorSketch: null,
 });
 
 const getDefaultTestConditions = (): TestConditions => ({
@@ -563,11 +567,30 @@ export const useReportStore = create<ReportState>()(
           };
 
           // Map equipment info
+          const rawTestMethod = inputs['test-method'];
+          const testMethod: EquipmentInfo['testMethod'] =
+            rawTestMethod === '1' || rawTestMethod === '2' || rawTestMethod === '3'
+              ? rawTestMethod
+              : '';
+          const blowerDoorPhoto =
+            typeof inputs['blower-door-photo'] === 'string' &&
+            inputs['blower-door-photo'].startsWith('data:')
+              ? inputs['blower-door-photo']
+              : null;
+          const blowerDoorSketch =
+            typeof inputs['blower-door-sketch'] === 'string' &&
+            inputs['blower-door-sketch'].startsWith('data:')
+              ? inputs['blower-door-sketch']
+              : null;
           const equipmentInfo: EquipmentInfo = {
             manufacturer: inputs['equipment-manufacturer'] || '',
             model: inputs['equipment-model'] || '',
             calibrationDate: inputs['equipment-calibration-date'] || '',
             calibrationValidUntil: inputs['equipment-calibration-valid-until'] || '',
+            companyName: inputs['company-name'] || '',
+            testMethod,
+            blowerDoorPhoto,
+            blowerDoorSketch,
           };
 
           // Map test conditions
@@ -682,6 +705,10 @@ export const useReportStore = create<ReportState>()(
             'equipment-model': state.equipmentInfo.model,
             'equipment-calibration-date': state.equipmentInfo.calibrationDate,
             'equipment-calibration-valid-until': state.equipmentInfo.calibrationValidUntil,
+            'company-name': state.equipmentInfo.companyName,
+            'test-method': state.equipmentInfo.testMethod,
+            'blower-door-photo': state.equipmentInfo.blowerDoorPhoto || '',
+            'blower-door-sketch': state.equipmentInfo.blowerDoorSketch || '',
             'wind-speed': String(state.testConditions.windSpeed),
             'wind-speed-source': state.testConditions.windSpeedSource,
             'envelope-area': String(state.buildingConditions.envelopeArea),
