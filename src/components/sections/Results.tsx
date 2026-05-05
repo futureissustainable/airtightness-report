@@ -5,7 +5,7 @@ import { Section, Input } from '@/components/ui';
 import { Check, X } from '@phosphor-icons/react';
 
 export default function Results() {
-  const { results, updateResults, getCalculatedResults } = useReportStore();
+  const { results, updateResults, getCalculatedResults, buildingConditions } = useReportStore();
   const calculated = getCalculatedResults();
   const complianceStatus = calculated.isPassing;
 
@@ -63,12 +63,14 @@ export default function Results() {
               <td className="py-3 px-4 text-center font-mono text-[var(--color-dark-title)]">{calculated.preV50.toFixed(1)}</td>
               <td className="py-3 px-4 text-center font-mono text-[var(--color-dark-title)]">{calculated.avgV50.toFixed(1)}</td>
             </tr>
-            <tr className="border-t border-[var(--color-dark-border)]">
-              <td className="py-3 px-4 text-[var(--color-dark-paragraph)]">qE₅₀ (m³/h·m²)</td>
-              <td className="py-3 px-4 text-center font-mono text-[var(--color-dark-title)]">{calculated.depQe50.toFixed(2)}</td>
-              <td className="py-3 px-4 text-center font-mono text-[var(--color-dark-title)]">{calculated.preQe50.toFixed(2)}</td>
-              <td className="py-3 px-4 text-center font-mono text-[var(--color-dark-title)]">{calculated.avgQe50.toFixed(2)}</td>
-            </tr>
+            {!buildingConditions.envelopeHidden && (
+              <tr className="border-t border-[var(--color-dark-border)]">
+                <td className="py-3 px-4 text-[var(--color-dark-paragraph)]">qE₅₀ (m³/h·m²)</td>
+                <td className="py-3 px-4 text-center font-mono text-[var(--color-dark-title)]">{calculated.depQe50.toFixed(2)}</td>
+                <td className="py-3 px-4 text-center font-mono text-[var(--color-dark-title)]">{calculated.preQe50.toFixed(2)}</td>
+                <td className="py-3 px-4 text-center font-mono text-[var(--color-dark-title)]">{calculated.avgQe50.toFixed(2)}</td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
