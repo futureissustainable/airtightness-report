@@ -70,7 +70,7 @@ export default function EquipmentAndConditions() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
         <Input
-          label="Calibration date"
+          label="Fan calibration date"
           type="date"
           value={equipmentInfo.calibrationDate}
           disabled={equipmentInfo.calibrationNotApplicable}
@@ -81,7 +81,7 @@ export default function EquipmentAndConditions() {
         <div className="flex flex-col gap-1.5 w-full">
           <div className="flex items-center justify-between">
             <label className="text-sm font-medium text-[var(--color-title)]">
-              Calibration valid until
+              Fan calibration valid until
             </label>
             <label className="flex items-center gap-1.5 text-xs text-[var(--color-muted)] cursor-pointer">
               <input
