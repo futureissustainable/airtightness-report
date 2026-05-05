@@ -32,6 +32,7 @@ export default function EquipmentAndConditions() {
   } = useReportStore();
 
   const calibrationExpired =
+    !equipmentInfo.calibrationHidden &&
     !equipmentInfo.calibrationNotApplicable &&
     equipmentInfo.calibrationValidUntil &&
     generalInfo.testDate &&
@@ -73,38 +74,53 @@ export default function EquipmentAndConditions() {
         />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-        <Input
-          label="Fan calibration date"
-          type="date"
-          value={equipmentInfo.calibrationDate}
-          onChange={(e) =>
-            updateEquipmentInfo({ calibrationDate: e.target.value })
-          }
-        />
-        <div className="flex flex-col gap-1.5 w-full">
-          <Select
-            label="Fan calibration valid until"
-            options={CALIBRATION_VALIDITY_OPTIONS}
-            value={equipmentInfo.calibrationNotApplicable ? 'within_interval' : 'date'}
+      <div className="flex justify-end mt-4">
+        <label className="flex items-center gap-1.5 text-xs text-[var(--color-muted)] cursor-pointer">
+          <input
+            type="checkbox"
+            checked={equipmentInfo.calibrationHidden}
             onChange={(e) =>
-              updateEquipmentInfo({
-                calibrationNotApplicable: e.target.value === 'within_interval',
-              })
+              updateEquipmentInfo({ calibrationHidden: e.target.checked })
             }
           />
-          {!equipmentInfo.calibrationNotApplicable && (
-            <Input
-              type="date"
-              value={equipmentInfo.calibrationValidUntil}
-              onChange={(e) =>
-                updateEquipmentInfo({ calibrationValidUntil: e.target.value })
-              }
-              error={calibrationExpired ? 'Calibration expired before test date' : undefined}
-            />
-          )}
-        </div>
+          Hide calibration dates
+        </label>
       </div>
+
+      {!equipmentInfo.calibrationHidden && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+          <Input
+            label="Fan calibration date"
+            type="date"
+            value={equipmentInfo.calibrationDate}
+            onChange={(e) =>
+              updateEquipmentInfo({ calibrationDate: e.target.value })
+            }
+          />
+          <div className="flex flex-col gap-1.5 w-full">
+            <Select
+              label="Fan calibration valid until"
+              options={CALIBRATION_VALIDITY_OPTIONS}
+              value={equipmentInfo.calibrationNotApplicable ? 'within_interval' : 'date'}
+              onChange={(e) =>
+                updateEquipmentInfo({
+                  calibrationNotApplicable: e.target.value === 'within_interval',
+                })
+              }
+            />
+            {!equipmentInfo.calibrationNotApplicable && (
+              <Input
+                type="date"
+                value={equipmentInfo.calibrationValidUntil}
+                onChange={(e) =>
+                  updateEquipmentInfo({ calibrationValidUntil: e.target.value })
+                }
+                error={calibrationExpired ? 'Calibration expired before test date' : undefined}
+              />
+            )}
+          </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
         <Input

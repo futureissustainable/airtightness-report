@@ -48,6 +48,7 @@ export interface EquipmentInfo {
   calibrationDate: string;
   calibrationValidUntil: string;
   calibrationNotApplicable: boolean;
+  calibrationHidden: boolean;
   companyName: string;
   testMethod: '' | '1' | '2' | '3';
   blowerDoorPhoto: string | null;
