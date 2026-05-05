@@ -74,42 +74,32 @@ export default function EquipmentAndConditions() {
         />
       </div>
 
-      <div className="border border-[var(--color-border)] mt-6">
-        <div className="flex items-center justify-between px-4 py-3 bg-[var(--color-surface)] border-b border-[var(--color-border)]">
-          <h4 className="text-sm font-medium text-[var(--color-title)]">
-            Fan calibration
-          </h4>
+      {equipmentInfo.calibrationHidden ? (
+        <div className="flex items-center gap-3 mt-6">
+          <div className="flex-1 h-px bg-[var(--color-border)]" />
           <button
             type="button"
-            role="switch"
-            aria-checked={!equipmentInfo.calibrationHidden}
-            onClick={() =>
-              updateEquipmentInfo({
-                calibrationHidden: !equipmentInfo.calibrationHidden,
-              })
-            }
-            className="flex items-center gap-2 text-xs text-[var(--color-muted)] cursor-pointer"
+            onClick={() => updateEquipmentInfo({ calibrationHidden: false })}
+            className="text-xs text-[var(--color-muted)] hover:text-[var(--color-title)] transition-colors"
           >
-            <span>{equipmentInfo.calibrationHidden ? 'Off' : 'On'}</span>
-            <span
-              className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
-                equipmentInfo.calibrationHidden
-                  ? 'bg-[var(--color-border)]'
-                  : 'bg-[var(--color-title)]'
-              }`}
-            >
-              <span
-                className={`inline-block h-3 w-3 transform rounded-full bg-white transition-transform ${
-                  equipmentInfo.calibrationHidden
-                    ? 'translate-x-1'
-                    : 'translate-x-5'
-                }`}
-              />
-            </span>
+            + Add fan calibration
           </button>
         </div>
+      ) : (
+        <div className="border border-[var(--color-border)] mt-6">
+          <div className="flex items-center justify-between px-4 py-3 bg-[var(--color-surface)] border-b border-[var(--color-border)]">
+            <h4 className="text-sm font-medium text-[var(--color-title)]">
+              Fan calibration
+            </h4>
+            <button
+              type="button"
+              onClick={() => updateEquipmentInfo({ calibrationHidden: true })}
+              className="text-xs text-[var(--color-muted)] hover:text-[var(--color-title)] transition-colors"
+            >
+              Remove
+            </button>
+          </div>
 
-        {!equipmentInfo.calibrationHidden && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4">
             <Input
               label="Fan calibration date"
@@ -142,8 +132,8 @@ export default function EquipmentAndConditions() {
               )}
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
         <Input
